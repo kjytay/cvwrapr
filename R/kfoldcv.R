@@ -24,10 +24,14 @@
 #' `predict_fun` to get predictions (other than `object` and `newx`). Default
 #' is the empty list. (RIGHT NOW, s IS ALSO INCLUDED BY DEFAULT, BUT
 #' I HAVE TO THINK THIS THROUGH.)
-#' @param row_params A vector which is a subset of `names(train_params)`,
+#' @param train_row_params A vector which is a subset of `names(train_params)`,
 #' indicating which parameters have to be subsetted in the CV loop. Default
 #' is `c("x", "y")`. Other parameters which should probably be included here
 #' are "weights" (for observation weights) and "offset".
+#' @param predict_row_params A vector which is a subset of `names(predict_params)`,
+#' indicating which parameters have to be subsetted in the CV loop. Default
+#' is `c("newx")`. Other parameters which should probably be included here
+#' are "newoffset".
 #' @param nfolds Number of folds (default is 10). Smallest allowable value
 #' is 3.
 #' @param foldid An optional vector of values between `1` and `nfolds`
@@ -48,13 +52,15 @@ kfoldcv <- function(x,
                     lambda = NULL,
                     train_params = list(),
                     predict_params = list(),
-                    row_params = c("x", "y"),
+                    train_row_params = c("x", "y"),
+                    predict_row_params = c("newx"),
                     nfolds = 10,
                     foldid = NULL,
                     parallel = FALSE,  # not in use yet
                     keep = FALSE) {
   train_params$x <- x
   train_params$y <- y
+  predict_params$newx <- x
   N <- nrow(x)
   type.measure <- match.arg(type.measure)
 
@@ -62,18 +68,22 @@ kfoldcv <- function(x,
   if (!is.null(lambda) && length(lambda) < 2)
     stop("Need more than one value of lambda for kfoldcv")
 
-  # row_params should be a subset of train_params' names
-  if (length(setdiff(row_params, names(train_params))) > 0)
-    stop("row_params should be a subset of names(train_params)")
+  # train_row_params should be a subset of train_params' names
+  if (length(setdiff(train_row_params, names(train_params))) > 0)
+    stop("train_row_params should be a subset of names(train_params)")
+
+  # predict_row_params should be a subset of predict_params' names
+  if (length(setdiff(predict_row_params, names(predict_params))) > 0)
+    stop("predict_row_params should be a subset of names(predict_params)")
 
   ### end parameter checking section
 
   # get observation weights
   if ("weights" %in% names(train_params)) {
     weights <- train_params$weights
-    if (!("weights" %in% row_params))
+    if (!("weights" %in% train_row_params))
       warning(paste0("observation weights provided in train_params, so",
-                     "'weights' should probably be in row_params"))
+                     "'weights' should probably be in train_row_params"))
   } else {
     weights <- rep(1, N)
   }
@@ -95,7 +105,7 @@ kfoldcv <- function(x,
     out_idx <- foldid == i
 
     # update the training parameters before fitting
-    for (param in row_params) {
+    for (param in train_row_params) {
       if (is.matrix(train_params_copy[[param]])) {
         train_params[[param]] <- train_params_copy[[param]][!out_idx, , drop = FALSE]
       } else {
@@ -107,8 +117,8 @@ kfoldcv <- function(x,
 
   # build prediction matrix
   lambda <- train_obj$lambda
-  predmat <- buildPredMat(outlist, lambda, x, foldid, predict_fun,
-                          predict_params)
+  predmat <- buildPredMat(outlist, lambda, foldid, predict_fun,
+                          predict_params, predict_row_params)
 
   # compute error metric
   cvstuff <- computeRawError(predmat, y, type.measure, weights, foldid)
