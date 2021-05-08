@@ -13,8 +13,8 @@ kfoldcv(
   lambda = NULL,
   train_params = list(),
   predict_params = list(),
-  train_row_params = c("x", "y"),
-  predict_row_params = c("newx"),
+  train_row_params = c(),
+  predict_row_params = c(),
   nfolds = 10,
   foldid = NULL,
   parallel = FALSE,
@@ -51,13 +51,15 @@ is the empty list. (RIGHT NOW, s IS ALSO INCLUDED BY DEFAULT, BUT
 I HAVE TO THINK THIS THROUGH.)}
 
 \item{train_row_params}{A vector which is a subset of `names(train_params)`,
-indicating which parameters have to be subsetted in the CV loop. Default
-is `c("x", "y")`. Other parameters which should probably be included here
+indicating which parameters have to be subsetted in the CV loop (other
+than `x` and `y`. Default is `c()`.
+Other parameters which should probably be included here
 are "weights" (for observation weights) and "offset".}
 
-\item{predict_row_params}{A vector which is a subset of `names(predict_params)`,
-indicating which parameters have to be subsetted in the CV loop. Default
-is `c("newx")`. Other parameters which should probably be included here
+\item{predict_row_params}{A vector which is a subset of
+`names(predict_params)`, indicating which parameters have to be subsetted
+in the CV loop (other than `newx`). Default is `c("newx")`.
+Other parameters which should probably be included here
 are "newoffset".}
 
 \item{nfolds}{Number of folds (default is 10). Smallest allowable value
