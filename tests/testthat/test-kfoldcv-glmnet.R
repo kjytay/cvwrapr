@@ -32,6 +32,16 @@ test_that("basic glmnet call", {
   compare_glmnet_fits(target_fit, cv_fit)
 })
 
+test_that("basic glmnet call, fixed lambda sequence", {
+  lambda <- c(2, 1, 0.5, 0.1, 0.05)
+  target_fit <- cv.glmnet(x, y, lambda = lambda, foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, y, train_fun = glmnet, predict_fun = predict,
+                    lambda = lambda,
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit)
+})
+
 test_that("basic glmnet call with weights", {
   target_fit <- cv.glmnet(x, y, weights = weights, foldid = foldid, keep = TRUE)
   cv_fit <- kfoldcv(x, y, train_fun = glmnet, predict_fun = predict,

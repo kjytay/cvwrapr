@@ -9,7 +9,6 @@ buildPredMat <- function(outlist, lambda, foldid, predict_fun,
   for (i in seq(nfolds)) {
     out_idx <- foldid == i
     predict_params$object <- outlist[[i]]
-    predict_params$s <- lambda  # this will have to change in the future
 
     # update the training parameters before fitting
     for (param in predict_row_params) {

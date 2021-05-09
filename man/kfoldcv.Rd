@@ -11,6 +11,7 @@ kfoldcv(
   predict_fun,
   type.measure = c("mse", "deviance", "mae"),
   lambda = NULL,
+  lambda_predict_name = "s",
   train_params = list(),
   predict_params = list(),
   train_row_params = c(),
@@ -40,6 +41,10 @@ right now.}
 
 \item{lambda}{Option user-supplied sequence representing the values of the
 hyperparameter to be cross-validated.}
+
+\item{lambda_predict_name}{The name of the function argument to specify
+the hyperparameter values we want predictions at for `predict_fun`.
+Default is "s".}
 
 \item{train_params}{Any parameters that should be passed to
 `train_fun` to fit the model (other than `x` and `y`). Default is the
@@ -79,5 +84,13 @@ omitted. The `foldid` vector is also returned. Default is `keep = FALSE`.}
 \description{
 Does k-fold cross-validation for a given model training function and
 prediction function. The hyperparameter to be cross-validated is assumed
-to be `lambda`.
+to be `lambda`. The training and prediction functions are assumed to be
+able to fit/predict for multiple `lambda` values at the same time.
+}
+\details{
+The model training function is assumed to take in the data matrix as `x`,
+the response as `y`, and the hyperparameter to be cross-validated as
+`lambda`. It is assumed that in its returned output, the hyperparameter
+values actually used are stored as `lambda`. The prediction function
+is assumed to take in the new data matrix as `newx`.
 }
