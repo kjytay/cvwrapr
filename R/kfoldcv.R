@@ -108,9 +108,16 @@ kfoldcv <- function(x,
   }
 
   # set nfolds and foldid
-  if (is.null(foldid))
+  if (is.null(foldid)) {
     foldid <- sample(rep(seq(nfolds), length = N))
-  else nfolds <- max(foldid)
+  } else {
+    # if foldid is not 1 to "nfolds", we make it so
+    foldid_vals <- sort(unique(foldid))
+    nfolds <- length(foldid_vals)
+    if (!identical(foldid_vals, 1:nfolds)) {
+      foldid <- match(foldid, foldid_vals)
+    }
+  }
   if (nfolds < 3)
     stop("nfolds must be >= 3; nfolds = 10 recommended")
 
