@@ -1,7 +1,11 @@
 library(glmnet)
 
 # passes when everything matches
-compare_glmnet_fits <- function(target_fit, new_fit) {
+compare_glmnet_fits <- function(target_fit, new_fit, family = "gaussian") {
+  if (family == "poisson") {
+    new_fit$fit.preval <- log(new_fit$fit.preval)
+  }
+
   expect_equal(target_fit$lambda, new_fit$lambda,
                label = "lambda doesn't match")
   expect_equal(target_fit$cvm, new_fit$cvm,
