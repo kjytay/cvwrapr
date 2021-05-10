@@ -89,6 +89,12 @@ kfoldcv <- function(x,
     stop(paste("Invalid type.measure for this family;",
                "see availableTypeMeasures() for possibilities"))
 
+  if ("family" %in% names(train_params) &&
+      is.character(train_params$family) &&
+      train_params$family != family)
+    warning(paste("family parameter in train_params doesn't match",
+                  "kfoldcv's family parameter"))
+
   if (!is.null(lambda) && length(lambda) < 2)
     stop("Need more than one value of lambda for kfoldcv")
 

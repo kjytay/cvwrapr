@@ -3,6 +3,7 @@ set.seed(1)
 nobs <- 50; nvars <- 10
 x <- matrix(rnorm(nobs * nvars), nrow = nobs)
 y <- rowSums(x[, 1:2]) + rnorm(nobs)
+biny <- ifelse(y > 0, 1, 0)
 foldid <- sample(rep(seq(5), length = nobs))
 
 test_that("foldid need not be 1:nfolds", {
@@ -16,5 +17,11 @@ test_that("foldid need not be 1:nfolds", {
 
 test_that("invalid type.measure", {
   expect_error(kfoldcv(x, y, train_fun = glmnet, predict_fun = predict,
-                       type.measure = "class", family = "poisson"))
+                       type.measure = "class"))
+})
+
+test_that("family mismatch", {
+  expect_warning(kfoldcv(x, biny, train_fun = glmnet, predict_fun = predict,
+                         type.measure = "deviance",
+                         train_params = list(family = "binomial")))
 })
