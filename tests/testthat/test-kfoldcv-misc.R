@@ -13,3 +13,8 @@ test_that("foldid need not be 1:nfolds", {
 
   compare_glmnet_fits(cv_fit1, cv_fit2)
 })
+
+test_that("invalid type.measure", {
+  expect_error(kfoldcv(x, y, train_fun = glmnet, predict_fun = predict,
+                       type.measure = "deviance"))
+})

@@ -19,9 +19,10 @@
 #' input matrix as `x` and a response variable as `y`.
 #' @param predict_fun The prediction function. This needs to take in the
 #' output of `train_fun` as `object` and new input matrix as `newx`.
-#' @param type.measure Loss function to use for cross-validation. NOT FULLY
-#' IMPLEMENTED YET: only works for "mse", "mae", "deviance" for gaussian family
-#' right now.
+#' @param type.measure Loss function to use for cross-validation. See
+#' `availableTypeMeasures()` for possible values for `type.measure`. Note that
+#' the package does not check if the user-specified measure is appropriate
+#' for the family.
 #' @param lambda Option user-supplied sequence representing the values of the
 #' hyperparameter to be cross-validated.
 #' @param lambda_predict_name The name of the function argument to specify
@@ -60,7 +61,7 @@ kfoldcv <- function(x,
                     y,
                     train_fun,
                     predict_fun,
-                    type.measure = c("mse", "deviance", "mae"),
+                    type.measure = "mse",
                     lambda = NULL,
                     lambda_predict_name = "s",
                     train_params = list(),
@@ -81,9 +82,11 @@ kfoldcv <- function(x,
   predict_row_params <- c("newx", predict_row_params)
   N <- nrow(x)
 
-  type.measure <- match.arg(type.measure)
-
   ### parameter checking section
+  all_measures <- sort(unique(unlist(availableTypeMeasures())))
+  if (!(type.measure %in% all_measures))
+    stop("Invalid type.measure; see availableTypeMeasures() for possibilities")
+
   if (!is.null(lambda) && length(lambda) < 2)
     stop("Need more than one value of lambda for kfoldcv")
 

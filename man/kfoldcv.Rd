@@ -9,7 +9,7 @@ kfoldcv(
   y,
   train_fun,
   predict_fun,
-  type.measure = c("mse", "deviance", "mae"),
+  type.measure = "mse",
   lambda = NULL,
   lambda_predict_name = "s",
   train_params = list(),
@@ -35,9 +35,10 @@ input matrix as `x` and a response variable as `y`.}
 \item{predict_fun}{The prediction function. This needs to take in the
 output of `train_fun` as `object` and new input matrix as `newx`.}
 
-\item{type.measure}{Loss function to use for cross-validation. NOT FULLY
-IMPLEMENTED YET: only works for "mse", "mae", "deviance" for gaussian family
-right now.}
+\item{type.measure}{Loss function to use for cross-validation. See
+`availableTypeMeasures()` for possible values for `type.measure`. Note that
+the package does not check if the user-specified measure is appropriate
+for the family.}
 
 \item{lambda}{Option user-supplied sequence representing the values of the
 hyperparameter to be cross-validated.}
