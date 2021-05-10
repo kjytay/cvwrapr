@@ -6,6 +6,7 @@ y <- rowSums(x[, 1:2]) + rnorm(nobs)
 foldid <- sample(rep(seq(5), length = nobs))
 weights <- rep(1:2, length.out = nobs)
 offset <- rnorm(nobs)
+penalty.factor <- rep(1:2, length.out = nvars)
 
 test_that("basic glmnet call", {
   target_fit <- cv.glmnet(x, y, foldid = foldid, keep = TRUE)
@@ -54,6 +55,19 @@ test_that("basic glmnet call with weights, mae", {
   cv_fit <- kfoldcv(x, y, train_fun = glmnet, predict_fun = predict,
                     type.measure = "mae",
                     train_params = list(weights = weights),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit)
+})
+
+test_that("basic glmnet call with mix of row and non-row params", {
+  target_fit <- cv.glmnet(x, y, weights = weights,
+                          penalty.factor = penalty.factor,
+                          foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, y, train_fun = glmnet, predict_fun = predict,
+                    train_params = list(weights = weights,
+                                        penalty.factor = penalty.factor),
                     train_row_params = c("weights"),
                     foldid = foldid, keep = TRUE)
 
