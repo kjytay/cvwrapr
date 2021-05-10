@@ -1,3 +1,19 @@
+#' Compute CV statistics
+#'
+#' Use the returned output from `computeRawError()` to compute CV statistics.
+#'
+#' @param cvstuff Output from a call to `computeRawError()`.
+#' @param foldid Vector of values identifying which fold each observation is
+#' in.
+#' @param lambda Lambda values associated with the errors in `cvstuff`.
+#'
+#' @return A list with the following elements:
+#' \item{lambda}{The values of lambda used in the fits.}
+#' \item{cvm}{The mean cross-validated error: a vector of length
+#' `length(lambda)`.}
+#' \item{cvsd}{Estimate of standard error of `cvm`.}
+#' \item{cvup}{Upper curve = `cvm + cvsd`.}
+#' \item{cvlo}{Lower curve = `cvm - cvsd`.}
 computeStats <- function(cvstuff, foldid, lambda) {
   # compute the statistics for each fold
   nfolds <- max(foldid)
