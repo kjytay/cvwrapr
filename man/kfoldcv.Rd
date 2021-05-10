@@ -10,6 +10,7 @@ kfoldcv(
   train_fun,
   predict_fun,
   type.measure = "mse",
+  family = "gaussian",
   lambda = NULL,
   lambda_predict_name = "s",
   train_params = list(),
@@ -39,6 +40,8 @@ output of `train_fun` as `object` and new input matrix as `newx`.}
 `availableTypeMeasures()` for possible values for `type.measure`. Note that
 the package does not check if the user-specified measure is appropriate
 for the family.}
+
+\item{family}{Model family; used to determine the correct loss function.}
 
 \item{lambda}{Option user-supplied sequence representing the values of the
 hyperparameter to be cross-validated.}

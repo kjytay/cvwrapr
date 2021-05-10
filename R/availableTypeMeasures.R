@@ -15,15 +15,13 @@ availableTypeMeasures <- function(family = c("all", "gaussian", "binomial",
   family <- match.arg(family)
   type.measures <- c("mse", "deviance", "class", "auc", "mae",
                     "C")
-  choices <- list(gaussian = c("mse", "mae"),
-                  binomial = c("binomial-deviance", "binomial-class", "auc",
-                               "mse", "mae"),
-                  poisson = c("poisson-deviance", "mse", "mae"),
-                  cox = c("cox-deviance", "C"),
-                  multinomial = c("multinomial-deviance", "multinomial-class",
-                                  "mse", "mae"),
+  choices <- list(gaussian = c("deviance", "mse", "mae"),
+                  binomial = c("deviance", "class", "auc", "mse", "mae"),
+                  poisson = c("deviance", "mse", "mae"),
+                  cox = c("deviance", "C"),
+                  multinomial = c("deviance", "class", "mse", "mae"),
                   mgaussian = c("mse", "mae"),
-                  GLM = c("glm-deviance", "mse", "mae"))
+                  GLM = c("deviance", "mse", "mae"))
   if (family == "all") {
     return(choices)
   } else {

@@ -4,7 +4,7 @@
 \alias{computeRawError}
 \title{Compute the nobs by nlambda matrix of errors}
 \usage{
-computeRawError(predmat, y, type.measure, weights, foldid)
+computeRawError(predmat, y, type.measure, family, weights, foldid)
 }
 \arguments{
 \item{predmat}{nobs by nlambda matrix of predictions. Note that these
@@ -17,6 +17,8 @@ is the linear predictor).}
 `availableTypeMeasures()` for possible values for `type.measure`. Note that
 the package does not check if the user-specified measure is appropriate
 for the family.}
+
+\item{family}{Model family; used to determine the correct loss function.}
 
 \item{weights}{Observation weights.}
 

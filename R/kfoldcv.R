@@ -23,6 +23,7 @@
 #' `availableTypeMeasures()` for possible values for `type.measure`. Note that
 #' the package does not check if the user-specified measure is appropriate
 #' for the family.
+#' @param family Model family; used to determine the correct loss function.
 #' @param lambda Option user-supplied sequence representing the values of the
 #' hyperparameter to be cross-validated.
 #' @param lambda_predict_name The name of the function argument to specify
@@ -62,6 +63,7 @@ kfoldcv <- function(x,
                     train_fun,
                     predict_fun,
                     type.measure = "mse",
+                    family = "gaussian",
                     lambda = NULL,
                     lambda_predict_name = "s",
                     train_params = list(),
@@ -83,9 +85,9 @@ kfoldcv <- function(x,
   N <- nrow(x)
 
   ### parameter checking section
-  all_measures <- sort(unique(unlist(availableTypeMeasures())))
-  if (!(type.measure %in% all_measures))
-    stop("Invalid type.measure; see availableTypeMeasures() for possibilities")
+  if (!(type.measure %in% availableTypeMeasures(family)))
+    stop(paste("Invalid type.measure for this family;",
+               "see availableTypeMeasures() for possibilities"))
 
   if (!is.null(lambda) && length(lambda) < 2)
     stop("Need more than one value of lambda for kfoldcv")
@@ -151,7 +153,7 @@ kfoldcv <- function(x,
                           predict_params, predict_row_params)
 
   # compute error metric
-  cvstuff <- computeRawError(predmat, y, type.measure, weights, foldid)
+  cvstuff <- computeRawError(predmat, y, type.measure, family, weights, foldid)
   out <- computeStats(cvstuff, foldid, lambda)
 
   if (keep)

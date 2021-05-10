@@ -11,7 +11,7 @@ offset <- rnorm(nobs)
 test_that("glmnet poisson-deviance", {
   target_fit <- cv.glmnet(x, poiy, family = "poisson", weights = weights,
                           foldid = foldid, keep = TRUE)
-  cv_fit <- kfoldcv(x, poiy, type.measure = "poisson-deviance",
+  cv_fit <- kfoldcv(x, poiy, type.measure = "deviance", family = "poisson",
                     train_fun = glmnet, predict_fun = predict,
                     train_params = list(family = "poisson",
                                         weights = weights),

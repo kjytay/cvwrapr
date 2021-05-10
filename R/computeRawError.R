@@ -12,6 +12,7 @@
 #' `availableTypeMeasures()` for possible values for `type.measure`. Note that
 #' the package does not check if the user-specified measure is appropriate
 #' for the family.
+#' @param family Model family; used to determine the correct loss function.
 #' @param weights Observation weights.
 #' @param foldid Vector of values identifying which fold each observation is
 #' in. Not in use at the moment.
@@ -22,23 +23,46 @@
 #' \item{N}{A vector of length nlambda representing the number of non-NA
 #' predictions associated with each lambda value.}
 #' \item{type.measure}{Loss function used for CV.}
-computeRawError <- function(predmat, y, type.measure, weights, foldid) {
-  all_measures <- sort(unique(unlist(availableTypeMeasures())))
-  if (!(type.measure %in% all_measures))
-    stop("Invalid type.measure; see availableTypeMeasures() for possibilities")
+computeRawError <- function(predmat, y, type.measure, family, weights, foldid) {
+  if (!(type.measure %in% availableTypeMeasures(family)))
+    stop(paste("Invalid type.measure for this family;",
+               "see availableTypeMeasures() for possibilities"))
 
+  return(do.call(paste0("computeRawError.", family),
+                 list(predmat = predmat, y = y, type.measure = type.measure,
+                      weights = weights, foldid = foldid)))
+}
+
+computeRawError.gaussian <- function(predmat, y, type.measure, family,
+                                     weights, foldid) {
+  N <- length(y) - apply(is.na(predmat), 2, sum)
+
+  if (type.measure %in% c("deviance", "mse")) {
+    cvraw <- (y - predmat)^2
+  } else if (type.measure == "mae") {
+    cvraw <- abs(y - predmat)
+  } else {
+    stop("invalid type.measure for gaussian family")
+  }
+  return(list(cvraw = cvraw, weights = weights, N = N,
+              type.measure = type.measure))
+}
+
+computeRawError.poisson <- function(predmat, y, type.measure, family,
+                                     weights, foldid) {
   N <- length(y) - apply(is.na(predmat), 2, sum)
 
   if (type.measure == "mse") {
     cvraw <- (y - predmat)^2
   } else if (type.measure == "mae") {
     cvraw <- abs(y - predmat)
-  } else if (type.measure == "poisson-deviance") {
+  } else if (type.measure == "deviance") {
     deveta <- y * log(predmat) - predmat
     devy <- y * log(y) - y
     cvraw <- 2 * (devy - deveta)
+  } else {
+    stop("invalid type.measure for poisson family")
   }
-
   return(list(cvraw = cvraw, weights = weights, N = N,
               type.measure = type.measure))
 }
