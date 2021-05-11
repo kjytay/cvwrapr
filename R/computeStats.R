@@ -17,10 +17,11 @@
 #' \item{cvup}{Upper curve = `cvm + cvsd`.}
 #' \item{cvlo}{Lower curve = `cvm - cvsd`.}
 computeStats <- function(cvstuff, foldid, lambda, grouped) {
-  # compute the statistics for each fold
-  nfolds <- max(foldid)
-  nlams <- dim(cvstuff$cvraw)[2]
-  cvstuff <- cvcompute(cvstuff, foldid, nlams)
+  if (grouped) {
+    # compute the statistics for each fold
+    nlams <- dim(cvstuff$cvraw)[2]
+    cvstuff <- cvcompute(cvstuff, foldid, nlams)
+  }
 
   cvm <- with(cvstuff, apply(cvraw, 2, weighted.mean, w = weights, na.rm = TRUE))
   cvsd <- with(cvstuff, sqrt(apply(scale(cvraw, cvm, FALSE)^2, 2, weighted.mean,

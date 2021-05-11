@@ -1,5 +1,5 @@
 buildPredMat <- function(outlist, lambda, foldid, predict_fun,
-                         predict_params, predict_row_params) {
+                         predict_params, predict_row_params, family) {
   predmat <- matrix(NA, length(foldid), length(lambda))
   nfolds <- max(foldid)
   nlams <- double(nfolds)
@@ -34,6 +34,8 @@ buildPredMat <- function(outlist, lambda, foldid, predict_fun,
   rn <- rownames(predict_params$newx)
   sn <- paste0("s", seq(0, length = nlambda))
   dimnames(predmat) <- list(rn, sn)
+  if (family == "binomial")
+    attr(predmat, "classnames") <- outlist[[1]]$classnames
 
   return(predmat)
 }

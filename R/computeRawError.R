@@ -27,6 +27,9 @@
 #' \item{type.measure}{Loss function used for CV.}
 computeRawError <- function(predmat, y, type.measure, family, weights, foldid,
                             grouped) {
+  if (family %in% c("cox", "multinomial", "mgaussian", "GLM"))
+    stop(paste("Not implemented yet for family =", family))
+
   if (!(type.measure %in% availableTypeMeasures(family)))
     stop(paste("Invalid type.measure for this family;",
                "see availableTypeMeasures() for possibilities"))
@@ -36,36 +39,95 @@ computeRawError <- function(predmat, y, type.measure, family, weights, foldid,
                       weights = weights, foldid = foldid, grouped = grouped)))
 }
 
-computeRawError.gaussian <- function(predmat, y, type.measure, family,
+computeRawError.binomial <- function(predmat, y, type.measure,
                                      weights, foldid, grouped) {
-  N <- length(y) - apply(is.na(predmat), 2, sum)
-
-  if (type.measure %in% c("deviance", "mse")) {
-    cvraw <- (y - predmat)^2
-  } else if (type.measure == "mae") {
-    cvraw <- abs(y - predmat)
-  } else {
-    stop("invalid type.measure for gaussian family")
+  nc <- dim(y)
+  if (is.null(nc)) {
+    y <- as.factor(y)
+    ntab <- table(y)
+    nc <- as.integer(length(ntab))
+    y <- diag(nc)[as.numeric(y), , drop=FALSE]
   }
+  N <- nrow(y)
+  nfolds <- max(foldid)
+
+  if ((N / nfolds < 10) && type.measure == "auc") {
+    warning(paste("Too few (< 10) observations per fold for type.measure='auc'",
+                  "in cv.lognet; changed to type.measure='deviance'.",
+                  "Alternatively, use smaller value for nfolds"),
+            call. = FALSE)
+    type.measure <- "deviance"
+  }
+
+  nlambda <- ncol(predmat)
+  if (type.measure == "auc") {
+    cvraw <- matrix(NA, nfolds, nlambda)
+    good <- matrix(0, nfolds, nlambda)
+    for (i in seq(nfolds)) {
+      good[i, seq(nlambda)] <- 1
+      which <- (foldid == i)
+      for (j in seq(nlambda)) {
+        cvraw[i, j] <- getAUC(y[which, ], predmat[which, j], weights[which])
+      }
+    }
+    N <- apply(good, 2, sum)
+    weights <- tapply(weights, foldid, sum)
+    grouped <- FALSE
+  }
+  else {
+    ywt <- apply(y, 1, sum)
+    y <- y / ywt
+    weights <- weights * ywt
+    N <- nrow(y) - apply(is.na(predmat), 2, sum)
+    prob_min <- 1e-05
+    prob_max <- 1 - prob_min
+    cvraw <- switch(type.measure,
+                    mse = (y[, 1] - (1 - predmat))^2 + (y[, 2] - predmat)^2,
+                    mae = abs(y[, 1] - (1 - predmat)) + abs(y[, 2] - predmat),
+                    deviance = {
+                      predmat <- pmin(pmax(predmat, prob_min), prob_max)
+                      lp <- y[, 1] * log(1 - predmat) + y[, 2] * log(predmat)
+                      ly <- log(y)
+                      ly[y == 0] <- 0
+                      ly <- drop((y * ly) %*% c(1, 1))
+                      2 * (ly - lp)
+                    },
+                    class = y[, 1] * (predmat > 0.5) + y[, 2] * (predmat <= 0.5)
+    )
+  }
+
   return(list(cvraw = cvraw, weights = weights, N = N,
               type.measure = type.measure, grouped = grouped))
 }
 
-computeRawError.poisson <- function(predmat, y, type.measure, family,
+computeRawError.gaussian <- function(predmat, y, type.measure,
                                      weights, foldid, grouped) {
   N <- length(y) - apply(is.na(predmat), 2, sum)
 
-  if (type.measure == "mse") {
-    cvraw <- (y - predmat)^2
-  } else if (type.measure == "mae") {
-    cvraw <- abs(y - predmat)
-  } else if (type.measure == "deviance") {
-    deveta <- y * log(predmat) - predmat
-    devy <- y * log(y) - y
-    cvraw <- 2 * (devy - deveta)
-  } else {
-    stop("invalid type.measure for poisson family")
-  }
+  cvraw <- switch(type.measure,
+                  mse = (y - predmat)^2,
+                  deviance = (y - predmat)^2,
+                  mae = abs(y - predmat)
+  )
+
+  return(list(cvraw = cvraw, weights = weights, N = N,
+              type.measure = type.measure, grouped = grouped))
+}
+
+computeRawError.poisson <- function(predmat, y, type.measure,
+                                     weights, foldid, grouped) {
+  N <- length(y) - apply(is.na(predmat), 2, sum)
+
+  cvraw <- switch(type.measure,
+                  mse = (y - predmat)^2,
+                  mae = abs(y - predmat),
+                  deviance = {
+                    deveta <- y * log(predmat) - predmat
+                    devy <- y * log(y) - y
+                    2 * (devy - deveta)
+                  }
+  )
+
   return(list(cvraw = cvraw, weights = weights, N = N,
               type.measure = type.measure, grouped = grouped))
 }

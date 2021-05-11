@@ -4,6 +4,8 @@ library(glmnet)
 compare_glmnet_fits <- function(target_fit, new_fit, family = "gaussian") {
   if (family == "poisson") {
     new_fit$fit.preval <- log(new_fit$fit.preval)
+  } else if (family == "binomial") {
+    new_fit$fit.preval <- log((new_fit$fit.preval) / (1 - new_fit$fit.preval))
   }
 
   expect_equal(target_fit$lambda, new_fit$lambda,
@@ -18,7 +20,9 @@ compare_glmnet_fits <- function(target_fit, new_fit, family = "gaussian") {
                label = "cvlo doesn't match")
   expect_equal(target_fit$name, new_fit$name,
                label = "name doesn't match")
-  expect_equal(target_fit$fit.preval, new_fit$fit.preval,
+  # some tolerance here because glmnet stores the linear predictor as
+  # fit.preval instead of the response on the y scale
+  expect_equal(target_fit$fit.preval, new_fit$fit.preval, tolerance = 1e-6,
                label = "fit.preval doesn't match")
   expect_equal(target_fit$lambda.min, new_fit$lambda.min,
                label = "lambda.min doesn't match")

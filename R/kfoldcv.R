@@ -169,7 +169,7 @@ kfoldcv <- function(x,
   lambda <- train_obj$lambda
   predict_params[[lambda_predict_name]] <- lambda
   predmat <- buildPredMat(outlist, lambda, foldid, predict_fun,
-                          predict_params, predict_row_params)
+                          predict_params, predict_row_params, family)
 
   # compute error metric
   # Note: computeRawError can change type.measure and grouped
