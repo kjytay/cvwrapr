@@ -69,6 +69,25 @@
 #' these fits are computed with this observation and the rest of its fold
 #' omitted. The `foldid` vector is also returned. Default is `keep = FALSE`.
 #'
+#' @return An object of class "cvobj".
+#' \item{lambda}{The values of lambda used in the fits.}
+#' \item{cvm}{The mean cross-validated error: a vector of length
+#' `length(lambda)`.}
+#' \item{cvsd}{Estimate of standard error of `cvm`.}
+#' \item{cvup}{Upper curve = `cvm + cvsd`.}
+#' \item{cvlo}{Lower curve = `cvm - cvsd`.}
+#' \item{fit.preval}{If `keep=TRUE`, this is the array of prevalidated fits.
+#' Some entries can be `NA`, if that and subsequent values of `lambda` are not
+#' reached for that fold.}
+#' \item{foldid}{If `keep=TRUE`, the fold assignments used.}
+#' \item{name}{A text string indicating the loss function used (for plotting
+#' purposes).}
+#' \item{lambda.min}{Value of `lambda` that gives minimum `cvm`.}
+#' \item{lambda.1se}{Largest value of `lambda` such that the error is within
+#' 1 standard error of the minimum.}
+#' \item{index}{A one-column matrix with the indices of `lambda.min` and
+#' `lambda.1se` in the sequence of coefficients, fits etc.}
+#'
 #' @export
 kfoldcv <- function(x,
                     y,
@@ -193,5 +212,6 @@ kfoldcv <- function(x,
   lamin <- with(out, getOptLambda(lambda, cvm, cvsd, type.measure))
   out <- c(out, as.list(lamin))
 
+  class(out) <- c("cvobj", class(out))
   return(out)
 }
