@@ -164,5 +164,10 @@ kfoldcv <- function(x,
 
   if (keep)
     out <- c(out, list(fit.preval = predmat, foldid = foldid))
+
+  # compute the lambda.min and lambda.1se values
+  lamin <- with(out, getOptLambda(lambda, cvm, cvsd, type.measure))
+  out <- c(out, as.list(lamin))
+
   return(out)
 }
