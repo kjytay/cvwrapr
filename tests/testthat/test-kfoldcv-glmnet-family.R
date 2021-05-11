@@ -97,6 +97,22 @@ test_that("glmnet binomial-auc", {
   compare_glmnet_fits(target_fit, cv_fit, family = "binomial")
 })
 
+test_that("glmnet binomial-auc, too few objservations", {
+  set.seed(3)
+  foldid2 <- sample(rep(seq(12), length = nobs))
+  expect_warning(target_fit <- cv.glmnet(
+    x, biny, family = "binomial", weights = weights,
+    type.measure = "auc", foldid = foldid2, keep = TRUE))
+  expect_warning(cv_fit <- kfoldcv(
+    x, biny, family = "binomial", type.measure = "auc",
+    train_fun = glmnet, predict_fun = predict,
+    train_params = list(family = "binomial", weights = weights),
+    predict_params = list(type = "response"),
+    train_row_params = c("weights"), foldid = foldid2, keep = TRUE))
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "binomial")
+})
+
 test_that("glmnet poisson-deviance", {
   target_fit <- cv.glmnet(x, poiy, family = "poisson", weights = weights,
                           foldid = foldid, keep = TRUE)
