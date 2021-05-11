@@ -1,0 +1,26 @@
+#' Get full name of loss function
+#'
+#' Get the full name of the loss function from `type.measure` and `family`.
+getTypeMeasureName <- function(type.measure, family) {
+  if (type.measure == "deviance") {
+    typename <- switch(family,
+                       gaussian = "Mean-squared Error",
+                       binomial = "Binomial Deviance",
+                       poisson = "Poisson Deviance",
+                       cox = "Partial Likelihood Deviance",
+                       multinomial = "Multinomial Deviance",
+                       mgaussian = "Mean-squared Error",
+                       GLM = "GLM Deviance"
+    )
+  } else {
+    typename <- switch(type.measure,
+                       mse = "Mean-Squared Error",
+                       mae = "Mean Absolute Error",
+                       auc = "AUC",
+                       class = "Misclassification Error",
+                       C = "C-index"
+    )
+  }
+  names(typename) <- type.measure
+  return(typename)
+}

@@ -62,7 +62,7 @@ kfoldcv <- function(x,
                     y,
                     train_fun,
                     predict_fun,
-                    type.measure = "mse",
+                    type.measure = "deviance",
                     family = "gaussian",
                     lambda = NULL,
                     lambda_predict_name = "s",
@@ -164,6 +164,7 @@ kfoldcv <- function(x,
 
   if (keep)
     out <- c(out, list(fit.preval = predmat, foldid = foldid))
+  out$name <- getTypeMeasureName(type.measure, family)
 
   # compute the lambda.min and lambda.1se values
   lamin <- with(out, getOptLambda(lambda, cvm, cvsd, type.measure))

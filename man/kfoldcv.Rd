@@ -9,7 +9,7 @@ kfoldcv(
   y,
   train_fun,
   predict_fun,
-  type.measure = "mse",
+  type.measure = "deviance",
   family = "gaussian",
   lambda = NULL,
   lambda_predict_name = "s",

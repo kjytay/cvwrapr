@@ -13,8 +13,7 @@ availableTypeMeasures <- function(family = c("all", "gaussian", "binomial",
                                              "poisson", "multinomial", "cox",
                                              "mgaussian", "GLM")) {
   family <- match.arg(family)
-  type.measures <- c("mse", "deviance", "class", "auc", "mae",
-                    "C")
+  type.measures <- c("mse", "deviance", "class", "auc", "mae", "C")
   choices <- list(gaussian = c("deviance", "mse", "mae"),
                   binomial = c("deviance", "class", "auc", "mse", "mae"),
                   poisson = c("deviance", "mse", "mae"),

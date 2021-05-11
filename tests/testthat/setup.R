@@ -16,6 +16,8 @@ compare_glmnet_fits <- function(target_fit, new_fit, family = "gaussian") {
                label = "cvup doesn't match")
   expect_equal(target_fit$cvlo, new_fit$cvlo,
                label = "cvlo doesn't match")
+  expect_equal(target_fit$name, new_fit$name,
+               label = "name doesn't match")
   expect_equal(target_fit$fit.preval, new_fit$fit.preval,
                label = "fit.preval doesn't match")
   expect_equal(target_fit$lambda.min, new_fit$lambda.min,
