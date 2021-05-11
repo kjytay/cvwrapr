@@ -16,6 +16,8 @@
 #' @param weights Observation weights.
 #' @param foldid Vector of values identifying which fold each observation is
 #' in. Not in use at the moment.
+#' @param grouped Experimental argument; see `kfoldcv()` documentation for
+#' details.
 #'
 #' @return A list with the following elements:
 #' \item{cvraw}{An nobs by nlambda matrix of raw error values.}
@@ -23,18 +25,19 @@
 #' \item{N}{A vector of length nlambda representing the number of non-NA
 #' predictions associated with each lambda value.}
 #' \item{type.measure}{Loss function used for CV.}
-computeRawError <- function(predmat, y, type.measure, family, weights, foldid) {
+computeRawError <- function(predmat, y, type.measure, family, weights, foldid,
+                            grouped) {
   if (!(type.measure %in% availableTypeMeasures(family)))
     stop(paste("Invalid type.measure for this family;",
                "see availableTypeMeasures() for possibilities"))
 
   return(do.call(paste0("computeRawError.", family),
                  list(predmat = predmat, y = y, type.measure = type.measure,
-                      weights = weights, foldid = foldid)))
+                      weights = weights, foldid = foldid, grouped = grouped)))
 }
 
 computeRawError.gaussian <- function(predmat, y, type.measure, family,
-                                     weights, foldid) {
+                                     weights, foldid, grouped) {
   N <- length(y) - apply(is.na(predmat), 2, sum)
 
   if (type.measure %in% c("deviance", "mse")) {
@@ -45,11 +48,11 @@ computeRawError.gaussian <- function(predmat, y, type.measure, family,
     stop("invalid type.measure for gaussian family")
   }
   return(list(cvraw = cvraw, weights = weights, N = N,
-              type.measure = type.measure))
+              type.measure = type.measure, grouped = grouped))
 }
 
 computeRawError.poisson <- function(predmat, y, type.measure, family,
-                                     weights, foldid) {
+                                     weights, foldid, grouped) {
   N <- length(y) - apply(is.na(predmat), 2, sum)
 
   if (type.measure == "mse") {
@@ -64,5 +67,5 @@ computeRawError.poisson <- function(predmat, y, type.measure, family,
     stop("invalid type.measure for poisson family")
   }
   return(list(cvraw = cvraw, weights = weights, N = N,
-              type.measure = type.measure))
+              type.measure = type.measure, grouped = grouped))
 }

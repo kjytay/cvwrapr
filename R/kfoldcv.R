@@ -52,6 +52,18 @@
 #' (inclusive) identifying which fold each observation is in. If supplied,
 #' `nfolds` can be missing.
 #' @param parallel NOT IMPLEMENTED YET
+#' @param grouped This is an experimental argument, with default `TRUE`,
+#' and can be ignored by most users. For all models except `family = "cox"`,
+#' this refers to computing `nfolds` separate statistics, and then using
+#' their mean and estimated standard error to describe the CV curve. If
+#' `FALSE`, an error matrix is built up at the observation level
+#' from the predictions from the `nfolds` fits, and then summarized (does
+#' not apply to `type.measure="auc"`). For the "cox" family,
+#' `grouped=TRUE` obtains the CV partial likelihood for the Kth fold by
+#' \emph{subtraction}; by subtracting the log partial likelihood evaluated on
+#' the full dataset from that evaluated on the on the (K-1)/K dataset. This
+#' makes more efficient use of risk sets. With `grouped=FALSE` the log
+#' partial likelihood is computed only on the Kth fold.
 #' @param keep If `keep = TRUE`, a prevalidated array is returned containing
 #' fitted values for each observation and each value of lambda. This means
 #' these fits are computed with this observation and the rest of its fold
@@ -73,6 +85,7 @@ kfoldcv <- function(x,
                     nfolds = 10,
                     foldid = NULL,
                     parallel = FALSE,  # not in use yet
+                    grouped = TRUE,
                     keep = FALSE) {
   # arguments x, y, newx and lambda have a special status at the moment
   # we may want to remove this special status in the future
@@ -159,8 +172,18 @@ kfoldcv <- function(x,
                           predict_params, predict_row_params)
 
   # compute error metric
-  cvstuff <- computeRawError(predmat, y, type.measure, family, weights, foldid)
-  out <- computeStats(cvstuff, foldid, lambda)
+  # Note: computeRawError can change type.measure and grouped
+  cvstuff <- computeRawError(predmat, y, type.measure, family, weights, foldid,
+                             grouped)
+  type.measure <- cvstuff$type.measure
+  grouped <- cvstuff$grouped
+  if ((N / nfolds < 3) && grouped) {
+    warning(paste("Option grouped = FALSE enforced in cv.glmnet,",
+                  "since < 3 observations per fold"),
+            call. = FALSE)
+    grouped <- FALSE
+  }
+  out <- computeStats(cvstuff, foldid, lambda, grouped)
 
   if (keep)
     out <- c(out, list(fit.preval = predmat, foldid = foldid))

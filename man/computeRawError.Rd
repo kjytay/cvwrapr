@@ -4,7 +4,7 @@
 \alias{computeRawError}
 \title{Compute the nobs by nlambda matrix of errors}
 \usage{
-computeRawError(predmat, y, type.measure, family, weights, foldid)
+computeRawError(predmat, y, type.measure, family, weights, foldid, grouped)
 }
 \arguments{
 \item{predmat}{nobs by nlambda matrix of predictions. Note that these
@@ -24,6 +24,9 @@ for the family.}
 
 \item{foldid}{Vector of values identifying which fold each observation is
 in. Not in use at the moment.}
+
+\item{grouped}{Experimental argument; see `kfoldcv()` documentation for
+details.}
 }
 \value{
 A list with the following elements:

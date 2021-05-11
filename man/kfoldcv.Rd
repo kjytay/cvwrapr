@@ -20,6 +20,7 @@ kfoldcv(
   nfolds = 10,
   foldid = NULL,
   parallel = FALSE,
+  grouped = TRUE,
   keep = FALSE
 )
 }
@@ -79,6 +80,19 @@ is 3.}
 `nfolds` can be missing.}
 
 \item{parallel}{NOT IMPLEMENTED YET}
+
+\item{grouped}{This is an experimental argument, with default `TRUE`,
+and can be ignored by most users. For all models except `family = "cox"`,
+this refers to computing `nfolds` separate statistics, and then using
+their mean and estimated standard error to describe the CV curve. If
+`FALSE`, an error matrix is built up at the observation level
+from the predictions from the `nfolds` fits, and then summarized (does
+not apply to `type.measure="auc"`). For the "cox" family,
+`grouped=TRUE` obtains the CV partial likelihood for the Kth fold by
+\emph{subtraction}; by subtracting the log partial likelihood evaluated on
+the full dataset from that evaluated on the on the (K-1)/K dataset. This
+makes more efficient use of risk sets. With `grouped=FALSE` the log
+partial likelihood is computed only on the Kth fold.}
 
 \item{keep}{If `keep = TRUE`, a prevalidated array is returned containing
 fitted values for each observation and each value of lambda. This means

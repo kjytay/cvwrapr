@@ -6,6 +6,8 @@
 #' @param foldid Vector of values identifying which fold each observation is
 #' in.
 #' @param lambda Lambda values associated with the errors in `cvstuff`.
+#' @param grouped Experimental argument; see `kfoldcv()` documentation for
+#' details.
 #'
 #' @return A list with the following elements:
 #' \item{lambda}{The values of lambda used in the fits.}
@@ -14,7 +16,7 @@
 #' \item{cvsd}{Estimate of standard error of `cvm`.}
 #' \item{cvup}{Upper curve = `cvm + cvsd`.}
 #' \item{cvlo}{Lower curve = `cvm - cvsd`.}
-computeStats <- function(cvstuff, foldid, lambda) {
+computeStats <- function(cvstuff, foldid, lambda, grouped) {
   # compute the statistics for each fold
   nfolds <- max(foldid)
   nlams <- dim(cvstuff$cvraw)[2]

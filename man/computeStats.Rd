@@ -4,7 +4,7 @@
 \alias{computeStats}
 \title{Compute CV statistics}
 \usage{
-computeStats(cvstuff, foldid, lambda)
+computeStats(cvstuff, foldid, lambda, grouped)
 }
 \arguments{
 \item{cvstuff}{Output from a call to `computeRawError()`.}
@@ -13,6 +13,9 @@ computeStats(cvstuff, foldid, lambda)
 in.}
 
 \item{lambda}{Lambda values associated with the errors in `cvstuff`.}
+
+\item{grouped}{Experimental argument; see `kfoldcv()` documentation for
+details.}
 }
 \value{
 A list with the following elements:
