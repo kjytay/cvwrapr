@@ -12,7 +12,6 @@ kfoldcv(
   type.measure = "deviance",
   family = "gaussian",
   lambda = NULL,
-  lambda_predict_name = "s",
   train_params = list(),
   predict_params = list(),
   train_row_params = c(),
@@ -47,18 +46,13 @@ for the family.}
 \item{lambda}{Option user-supplied sequence representing the values of the
 hyperparameter to be cross-validated.}
 
-\item{lambda_predict_name}{The name of the function argument to specify
-the hyperparameter values we want predictions at for `predict_fun`.
-Default is "s".}
-
 \item{train_params}{Any parameters that should be passed to
 `train_fun` to fit the model (other than `x` and `y`). Default is the
 empty list.}
 
 \item{predict_params}{Any other parameters that should be passed tp
 `predict_fun` to get predictions (other than `object` and `newx`). Default
-is the empty list. (RIGHT NOW, s IS ALSO INCLUDED BY DEFAULT, BUT
-I HAVE TO THINK THIS THROUGH.)}
+is the empty list.}
 
 \item{train_row_params}{A vector which is a subset of `names(train_params)`,
 indicating which parameters have to be subsetted in the CV loop (other
@@ -130,5 +124,6 @@ The model training function is assumed to take in the data matrix as `x`,
 the response as `y`, and the hyperparameter to be cross-validated as
 `lambda`. It is assumed that in its returned output, the hyperparameter
 values actually used are stored as `lambda`. The prediction function
-is assumed to take in the new data matrix as `newx`.
+is assumed to take in the new data matrix as `newx`, and a `lambda`
+sequence as `s`.
 }

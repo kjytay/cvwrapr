@@ -9,7 +9,8 @@
 #' the response as `y`, and the hyperparameter to be cross-validated as
 #' `lambda`. It is assumed that in its returned output, the hyperparameter
 #' values actually used are stored as `lambda`. The prediction function
-#' is assumed to take in the new data matrix as `newx`.
+#' is assumed to take in the new data matrix as `newx`, and a `lambda`
+#' sequence as `s`.
 #'
 #' @param x Input matrix of dimension `nobs` by `nvars`; each row is an
 #' observation vector.
@@ -26,16 +27,12 @@
 #' @param family Model family; used to determine the correct loss function.
 #' @param lambda Option user-supplied sequence representing the values of the
 #' hyperparameter to be cross-validated.
-#' @param lambda_predict_name The name of the function argument to specify
-#' the hyperparameter values we want predictions at for `predict_fun`.
-#' Default is "s".
 #' @param train_params Any parameters that should be passed to
 #' `train_fun` to fit the model (other than `x` and `y`). Default is the
 #' empty list.
 #' @param predict_params Any other parameters that should be passed tp
 #' `predict_fun` to get predictions (other than `object` and `newx`). Default
-#' is the empty list. (RIGHT NOW, s IS ALSO INCLUDED BY DEFAULT, BUT
-#' I HAVE TO THINK THIS THROUGH.)
+#' is the empty list.
 #' @param train_row_params A vector which is a subset of `names(train_params)`,
 #' indicating which parameters have to be subsetted in the CV loop (other
 #' than `x` and `y`. Default is `c()`.
@@ -96,7 +93,6 @@ kfoldcv <- function(x,
                     type.measure = "deviance",
                     family = "gaussian",
                     lambda = NULL,
-                    lambda_predict_name = "s",
                     train_params = list(),
                     predict_params = list(),
                     train_row_params = c(),
@@ -186,7 +182,7 @@ kfoldcv <- function(x,
 
   # build prediction matrix
   lambda <- train_obj$lambda
-  predict_params[[lambda_predict_name]] <- lambda
+  predict_params$s <- lambda
   predmat <- buildPredMat(outlist, lambda, foldid, predict_fun,
                           predict_params, predict_row_params, family)
 
