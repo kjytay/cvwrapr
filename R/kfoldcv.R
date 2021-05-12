@@ -187,26 +187,18 @@ kfoldcv <- function(x,
                           predict_params, predict_row_params, family)
 
   # compute error metric
-  # Note: computeRawError can change type.measure and grouped
-  cvstuff <- computeRawError(predmat, y, type.measure, family, weights, foldid,
-                             grouped)
-  type.measure <- cvstuff$type.measure
-  grouped <- cvstuff$grouped
-  if ((N / nfolds < 3) && grouped) {
-    warning(paste("Option grouped = FALSE enforced in cv.glmnet,",
-                  "since < 3 observations per fold"),
-            call. = FALSE)
-    grouped <- FALSE
-  }
-  out <- computeStats(cvstuff, foldid, lambda, grouped)
+  # Note: computeError can change type.measure and grouped
+  out <- computeError(predmat, y, lambda, foldid, type.measure, family,
+                      weights, grouped)
 
   if (keep)
     out <- c(out, list(fit.preval = predmat, foldid = foldid))
-  out$name <- getTypeMeasureName(type.measure, family)
+  out$name <- getTypeMeasureName(out$type.measure, family)
 
   # compute the lambda.min and lambda.1se values
-  lamin <- with(out, getOptLambda(lambda, cvm, cvsd, type.measure))
+  lamin <- with(out, getOptLambda(lambda, cvm, cvsd, out$type.measure))
   out <- c(out, as.list(lamin))
+  out$type.measure <- NULL
 
   class(out) <- c("cvobj", class(out))
   return(out)

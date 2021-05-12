@@ -97,7 +97,7 @@ test_that("glmnet binomial-auc", {
   compare_glmnet_fits(target_fit, cv_fit, family = "binomial")
 })
 
-test_that("glmnet binomial-auc, too few objservations", {
+test_that("glmnet binomial-auc, too few observations", {
   set.seed(3)
   foldid2 <- sample(rep(seq(12), length = nobs))
   expect_warning(target_fit <- cv.glmnet(
