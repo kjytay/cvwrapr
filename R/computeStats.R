@@ -37,16 +37,18 @@ computeStats <- function(cvstuff, foldid, lambda, grouped) {
 }
 
 cvcompute <- function (cvstuff, foldid, nlams) {
+  foldid_vals <- sort(unique(foldid))
+  nfolds <- length(foldid_vals)
+
   weights <- cvstuff$weights
   mat <- cvstuff$cvraw
   wisum <- tapply(weights, foldid, sum)
-  nfolds <- max(foldid)
   outmat <- matrix(NA, nfolds, ncol(mat))
   good <- matrix(0, nfolds, ncol(mat))
   mat[is.infinite(mat)] <- NA
-  for (i in seq(nfolds)) {
-    mati <- mat[foldid == i, , drop = FALSE]
-    wi <- weights[foldid == i]
+  for (i in seq_along(foldid_vals)) {
+    mati <- mat[foldid == foldid_vals[i], , drop = FALSE]
+    wi <- weights[foldid == foldid_vals[i]]
     outmat[i, ] <- apply(mati, 2, weighted.mean, w = wi, na.rm = TRUE)
     good[i, seq(nlams)] <- 1
   }

@@ -136,7 +136,7 @@ kfoldcv <- function(x,
 
   ### end parameter checking section
 
-  # get observation weights
+  # get observation weights from train_params (if available)
   if ("weights" %in% names(train_params)) {
     weights <- train_params$weights
     if (!("weights" %in% train_row_params))
@@ -149,13 +149,11 @@ kfoldcv <- function(x,
   # set nfolds and foldid
   if (is.null(foldid)) {
     foldid <- sample(rep(seq(nfolds), length = N))
+    foldid_vals <- 1:nfolds
   } else {
     # if foldid is not 1 to "nfolds", we make it so
     foldid_vals <- sort(unique(foldid))
     nfolds <- length(foldid_vals)
-    if (!identical(foldid_vals, 1:nfolds)) {
-      foldid <- match(foldid, foldid_vals)
-    }
   }
   if (nfolds < 3)
     stop("nfolds must be >= 3; nfolds = 10 recommended")
@@ -166,8 +164,8 @@ kfoldcv <- function(x,
 
   # fit for each of the folds
   outlist <- as.list(seq(nfolds))  # to store the fits
-  for (i in seq(nfolds)) {
-    out_idx <- foldid == i
+  for (i in seq_along(foldid_vals)) {
+    out_idx <- (foldid == foldid_vals[i])
 
     # update the training parameters before fitting
     for (param in train_row_params) {

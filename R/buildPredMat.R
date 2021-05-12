@@ -1,13 +1,14 @@
 buildPredMat <- function(outlist, lambda, foldid, predict_fun,
                          predict_params, predict_row_params, family) {
+  foldid_vals <- sort(unique(foldid))
+  nfolds <- length(foldid_vals)
   predmat <- matrix(NA, length(foldid), length(lambda))
-  nfolds <- max(foldid)
   nlams <- double(nfolds)
   nlambda <- length(lambda)
 
   predict_params_copy <- predict_params
-  for (i in seq(nfolds)) {
-    out_idx <- foldid == i
+  for (i in seq_along(foldid_vals)) {
+    out_idx <- (foldid == foldid_vals[i])
     predict_params$object <- outlist[[i]]
 
     # update the training parameters before fitting

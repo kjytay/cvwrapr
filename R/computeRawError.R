@@ -15,7 +15,7 @@
 #' @param family Model family; used to determine the correct loss function.
 #' @param weights Observation weights.
 #' @param foldid Vector of values identifying which fold each observation is
-#' in. Not in use at the moment.
+#' in.
 #' @param grouped Experimental argument; see `kfoldcv()` documentation for
 #' details.
 #'
@@ -49,7 +49,9 @@ computeRawError.binomial <- function(predmat, y, type.measure,
     y <- diag(nc)[as.numeric(y), , drop=FALSE]
   }
   N <- nrow(y)
-  nfolds <- max(foldid)
+
+  foldid_vals <- sort(unique(foldid))
+  nfolds <- length(foldid_vals)
 
   if ((N / nfolds < 10) && type.measure == "auc") {
     warning(paste("Too few (< 10) observations per fold for type.measure='auc'",
@@ -63,9 +65,9 @@ computeRawError.binomial <- function(predmat, y, type.measure,
   if (type.measure == "auc") {
     cvraw <- matrix(NA, nfolds, nlambda)
     good <- matrix(0, nfolds, nlambda)
-    for (i in seq(nfolds)) {
+    for (i in seq_along(foldid_vals)) {
       good[i, seq(nlambda)] <- 1
-      which <- (foldid == i)
+      which <- (foldid == foldid_vals[i])
       for (j in seq(nlambda)) {
         cvraw[i, j] <- getAUC(y[which, ], predmat[which, j], weights[which])
       }

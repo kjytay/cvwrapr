@@ -10,7 +10,22 @@ test_that("foldid need not be 1:nfolds", {
   cv_fit1 <- kfoldcv(x, y, train_fun = glmnet, predict_fun = predict,
                      foldid = foldid, keep = TRUE)
   cv_fit2 <- kfoldcv(x, y, train_fun = glmnet, predict_fun = predict,
-                     foldid = foldid * 2, keep = TRUE)
+                     foldid = -foldid * 2, keep = TRUE)
+
+  compare_glmnet_fits(cv_fit1, cv_fit2)
+})
+
+test_that("foldid need not be 1:nfolds, auc", {
+  cv_fit1 <- kfoldcv(x, biny, type.measure = "auc", family = "binomial",
+                     train_fun = glmnet, predict_fun = predict,
+                     train_params = list(family = "binomial"),
+                     predict_params = list(type = "response"),
+                     foldid = foldid, keep = TRUE)
+  cv_fit2 <- kfoldcv(x, biny, type.measure = "auc", family = "binomial",
+                     train_fun = glmnet, predict_fun = predict,
+                     train_params = list(family = "binomial"),
+                     predict_params = list(type = "response"),
+                     foldid = -foldid * 2, keep = TRUE)
 
   compare_glmnet_fits(cv_fit1, cv_fit2)
 })

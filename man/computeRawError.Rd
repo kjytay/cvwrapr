@@ -23,7 +23,7 @@ for the family.}
 \item{weights}{Observation weights.}
 
 \item{foldid}{Vector of values identifying which fold each observation is
-in. Not in use at the moment.}
+in.}
 
 \item{grouped}{Experimental argument; see `kfoldcv()` documentation for
 details.}
