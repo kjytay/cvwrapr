@@ -1,7 +1,7 @@
 Package: cvwrapr
 Type: Package
 Title: Tools for Cross Validation
-Version: 0.0.1
+Version: 0.0.2
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
@@ -12,6 +12,9 @@ LazyData: true
 RoxygenNote: 7.1.1
 Suggests: 
     testthat,
-    glmnet
+    glmnet,
+    knitr,
+    rmarkdown
 Imports: 
     survival
+VignetteBuilder: knitr
