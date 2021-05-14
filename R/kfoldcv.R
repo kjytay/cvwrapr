@@ -181,7 +181,7 @@ kfoldcv <- function(x,
   # build prediction matrix
   lambda <- train_obj$lambda
   predict_params$s <- lambda
-  predmat <- buildPredMat(outlist, lambda, foldid, predict_fun,
+  predmat <- buildPredMat(outlist, y, lambda, foldid, predict_fun,
                           predict_params, predict_row_params, family)
 
   # compute error metric

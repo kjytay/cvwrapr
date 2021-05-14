@@ -11,14 +11,17 @@ computeError(
   foldid,
   type.measure,
   family,
-  weights = rep(1, nrow(predmat)),
+  weights = rep(1, dim(predmat)[1]),
   grouped = TRUE
 )
 }
 \arguments{
-\item{predmat}{nobs by nlambda matrix of predictions. Note that these
-should be on the same scale as `y` (unlike in the glmnet package where it
-is the linear predictor).}
+\item{predmat}{Array of predictions. If `y` is univariate, this has
+dimensions `c(nobs, nlambda)`. If `y` is multivariate with `nc`
+levels/columns (e.g. for `family = "multionmial"` or
+`family = "mgaussian"`), this has dimensions `c(nobs, nc, nlambda)`.
+Note that these should be on the same scale as `y` (unlike in the
+glmnet package where it is the linear predictor).}
 
 \item{y}{Response variable.}
 

@@ -1,10 +1,12 @@
 # create fake data
 set.seed(1)
-nobs <- 50; nvars <- 10
+nobs <- 100; nvars <- 10
 x <- matrix(rnorm(nobs * nvars), nrow = nobs)
 y <- rowSums(x[, 1:2]) + rnorm(nobs)
 biny <- ifelse(y > 0, 1, 0)
 factorbiny <- factor(biny, labels = c("a", "b"))
+multinomy <- ifelse(y > 0.6, 3, ifelse(y < -0.6, 1, 2))
+factormultinomy <- factor(multinomy, labels = c("a", "b", "c"))
 poiy <- exp(y)
 foldid <- sample(rep(seq(5), length = nobs))
 weights <- rep(1:2, length.out = nobs)
@@ -23,7 +25,7 @@ test_that("glmnet binomial-deviance", {
   compare_glmnet_fits(target_fit, cv_fit, family = "binomial")
 })
 
-test_that("glmnet binomial-deviance (factor", {
+test_that("glmnet binomial-deviance (factor)", {
   target_fit <- cv.glmnet(x, factorbiny, family = "binomial", weights = weights,
                           foldid = foldid, keep = TRUE)
   cv_fit <- kfoldcv(x, factorbiny, family = "binomial",
@@ -155,4 +157,77 @@ test_that("glmnet poisson-mae", {
                     foldid = foldid, keep = TRUE)
 
   compare_glmnet_fits(target_fit, cv_fit, family = "poisson")
+})
+
+test_that("glmnet multinomial-deviance", {
+  target_fit <- cv.glmnet(x, multinomy, family = "multinomial", weights = weights,
+                          foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, multinomy, family = "multinomial",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = "multinomial",
+                                        weights = weights),
+                    predict_params = list(type = "response"),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "multinomial")
+})
+
+test_that("glmnet multinomial-deviance (factor)", {
+  target_fit <- cv.glmnet(x, factormultinomy, family = "multinomial",
+                          weights = weights, foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, factormultinomy, family = "multinomial",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = "multinomial",
+                                        weights = weights),
+                    predict_params = list(type = "response"),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "multinomial")
+})
+
+test_that("glmnet multinomial-class", {
+  target_fit <- cv.glmnet(x, multinomy, family = "multinomial", weights = weights,
+                          type.measure = "class", foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, multinomy, family = "multinomial",
+                    type.measure = "class",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = "multinomial",
+                                        weights = weights),
+                    predict_params = list(type = "response"),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "multinomial")
+})
+
+test_that("glmnet multinomial-mse", {
+  target_fit <- cv.glmnet(x, multinomy, family = "multinomial", weights = weights,
+                          type.measure = "mse", foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, multinomy, family = "multinomial",
+                    type.measure = "mse",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = "multinomial",
+                                        weights = weights),
+                    predict_params = list(type = "response"),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "multinomial")
+})
+
+test_that("glmnet multinomial-mae", {
+  target_fit <- cv.glmnet(x, multinomy, family = "multinomial", weights = weights,
+                          type.measure = "mae", foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, multinomy, family = "multinomial",
+                    type.measure = "mae",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = "multinomial",
+                                        weights = weights),
+                    predict_params = list(type = "response"),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "multinomial")
 })

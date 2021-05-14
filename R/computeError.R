@@ -2,9 +2,12 @@
 #'
 #' Compute CV statistics from a matrix of predictions.
 #'
-#' @param predmat nobs by nlambda matrix of predictions. Note that these
-#' should be on the same scale as `y` (unlike in the glmnet package where it
-#' is the linear predictor).
+#' @param predmat Array of predictions. If `y` is univariate, this has
+#' dimensions `c(nobs, nlambda)`. If `y` is multivariate with `nc`
+#' levels/columns (e.g. for `family = "multionmial"` or
+#' `family = "mgaussian"`), this has dimensions `c(nobs, nc, nlambda)`.
+#' Note that these should be on the same scale as `y` (unlike in the
+#' glmnet package where it is the linear predictor).
 #' @param y Response variable.
 #' @param lambda Lambda values associated with the errors in `predmat`.
 #' @param foldid Vector of values identifying which fold each observation is
@@ -18,11 +21,11 @@
 #'
 #' @export
 computeError <- function(predmat, y, lambda, foldid, type.measure, family,
-                         weights = rep(1, nrow(predmat)),
+                         weights = rep(1, dim(predmat)[1]),
                          grouped = TRUE) {
   ### parameter checks
-  if (length(lambda) != ncol(predmat))
-    stop("lambda should be a vector of length `ncol(predmat)`")
+  if (length(lambda) != dim(predmat)[length(dim(predmat))])
+    stop("lambda should be a vector of length `dim(predmat)[length(dim(predmat))]`")
 
   ### end parameter checks
 
@@ -33,7 +36,7 @@ computeError <- function(predmat, y, lambda, foldid, type.measure, family,
                              grouped)
 
   grouped <- cvstuff$grouped
-  if ((nrow(predmat) / nfolds < 3) && grouped) {
+  if ((dim(predmat)[1] / nfolds < 3) && grouped) {
     warning(paste("Option grouped = FALSE enforced in cv.glmnet,",
                   "since < 3 observations per fold"),
             call. = FALSE)

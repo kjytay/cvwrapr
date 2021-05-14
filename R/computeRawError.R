@@ -4,9 +4,12 @@
 #' measure provided. Only works for "gaussian" and "poisson" families right
 #' now.
 #'
-#' @param predmat nobs by nlambda matrix of predictions. Note that these
-#' should be on the same scale as `y` (unlike in the glmnet package where it
-#' is the linear predictor).
+#' @param predmat Array of predictions. If `y` is univariate, this has
+#' dimensions `c(nobs, nlambda)`. If `y` is multivariate with `nc`
+#' levels/columns (e.g. for `family = "multionmial"` or
+#' `family = "mgaussian"`), this has dimensions `c(nobs, nc, nlambda)`.
+#' Note that these should be on the same scale as `y` (unlike in the
+#' glmnet package where it is the linear predictor).
 #' @param y Response variable.
 #' @param type.measure Loss function to use for cross-validation. See
 #' `availableTypeMeasures()` for possible values for `type.measure`. Note that
@@ -27,7 +30,7 @@
 #' \item{type.measure}{Loss function used for CV.}
 computeRawError <- function(predmat, y, type.measure, family, weights, foldid,
                             grouped) {
-  if (family %in% c("cox", "multinomial", "mgaussian", "GLM"))
+  if (family %in% c("cox", "mgaussian", "GLM"))
     stop(paste("Not implemented yet for family =", family))
 
   if (!(type.measure %in% availableTypeMeasures(family)))
@@ -130,6 +133,47 @@ computeRawError.poisson <- function(predmat, y, type.measure,
                   }
   )
 
+  return(list(cvraw = cvraw, weights = weights, N = N,
+              type.measure = type.measure, grouped = grouped))
+}
+
+computeRawError.multinomial <- function(predmat, y, type.measure,
+                                        weights, foldid, grouped) {
+  # get no. of levels in y, and get y into the form we want
+  nc = dim(y)
+  if (is.null(nc)) {
+    y <- as.factor(y)
+    ntab <- table(y)
+    nc <- as.integer(length(ntab))
+    y <- diag(nc)[as.numeric(y), ,drop=FALSE]
+  }
+  else nc <- nc[2]
+
+  ywt <- apply(y, 1, sum)
+  y <- y/ywt
+  weights <- weights * ywt
+  N <- nrow(y) - apply(is.na(predmat[, 1, , drop = FALSE]), 2, sum) ## dimensions could be lost if third dim=1
+  bigY <- array(y, dim(predmat))
+  prob_min <- 1e-05
+  prob_max <- 1 - prob_min
+  cvraw = switch(type.measure,
+                 mse = apply((bigY - predmat)^2, c(1, 3), sum),
+                 mae = apply(abs(bigY - predmat), c(1, 3), sum),
+                 deviance = {
+                   predmat <- pmin(pmax(predmat, prob_min), prob_max)
+                   lp <- bigY * log(predmat)
+                   ly <- bigY * log(bigY)
+                   ly[bigY == 0] <- 0
+                   apply(2 * (ly - lp), c(1, 3), sum)
+                 },
+                 class = {
+                   classid <- as.numeric(apply(predmat, 3, getSoftmax,
+                                               ignore_labels = TRUE))
+                   yperm <- matrix(aperm(bigY, c(1, 3, 2)), ncol = nc)
+                   matrix(1 - yperm[cbind(seq(classid), classid)],
+                          ncol = dim(predmat)[3])
+                 }
+  )
   return(list(cvraw = cvraw, weights = weights, N = N,
               type.measure = type.measure, grouped = grouped))
 }
