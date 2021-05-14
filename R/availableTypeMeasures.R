@@ -19,7 +19,7 @@ availableTypeMeasures <- function(family = c("all", "gaussian", "binomial",
                   poisson = c("deviance", "mse", "mae"),
                   cox = c("deviance", "C"),
                   multinomial = c("deviance", "class", "mse", "mae"),
-                  mgaussian = c("mse", "mae"),
+                  mgaussian = c("deviance", "mse", "mae"),
                   GLM = c("deviance", "mse", "mae"))
   if (family == "all") {
     return(choices)

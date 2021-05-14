@@ -8,7 +8,7 @@ buildPredMat <- function(outlist, y, lambda, foldid, predict_fun,
 
   # determine dimensions for the prediction matrix
   nc <- NULL
-  if (family == "multinomial") {
+  if (family %in% c("multinomial", "mgaussian")) {
     nc <- dim(y)
     if (is.null(nc)) {
       y <- as.factor(y)
@@ -38,7 +38,7 @@ buildPredMat <- function(outlist, y, lambda, foldid, predict_fun,
     # if fold lambda is longer than overall lambda, we need to cut off the extra
     # if fold lambda is shorter than overall lambda, we copy the last column
     # to the end
-    if (family == "multinomial") {
+    if (family %in% c("multinomial", "mgaussian")) {
       nlami <- min(dim(preds)[3], nlambda)
       predmat[out_idx, , seq(nlami)] <- preds[, , seq(nlami)]
       if (nlami < nlambda)
@@ -55,7 +55,7 @@ buildPredMat <- function(outlist, y, lambda, foldid, predict_fun,
   # add dimension names
   rn <- rownames(predict_params$newx)
   sn <- paste0("s", seq(0, length = nlambda))
-  if (family == "multinomial") {
+  if (family %in% c("multinomial", "mgaussian")) {
     cn <- dimnames(preds)[[2]]
     dimnames(predmat) <- list(rn, cn, sn)
   } else {

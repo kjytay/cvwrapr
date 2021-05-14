@@ -8,6 +8,7 @@ factorbiny <- factor(biny, labels = c("a", "b"))
 multinomy <- ifelse(y > 0.6, 3, ifelse(y < -0.6, 1, 2))
 factormultinomy <- factor(multinomy, labels = c("a", "b", "c"))
 poiy <- exp(y)
+multiy <- matrix(y, nrow = nobs, ncol = 3) + matrix(rnorm(nobs * 3), ncol = 3)
 foldid <- sample(rep(seq(5), length = nobs))
 weights <- rep(1:2, length.out = nobs)
 
@@ -230,4 +231,47 @@ test_that("glmnet multinomial-mae", {
                     foldid = foldid, keep = TRUE)
 
   compare_glmnet_fits(target_fit, cv_fit, family = "multinomial")
+})
+
+test_that("glmnet mgaussian-deviance", {
+  target_fit <- cv.glmnet(x, multiy, family = "mgaussian", weights = weights,
+                          type.measure = "deviance",
+                          foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, multiy, family = "mgaussian",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = "mgaussian",
+                                        weights = weights),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "mgaussian")
+})
+
+test_that("glmnet mgaussian-mse", {
+  target_fit <- cv.glmnet(x, multiy, family = "mgaussian", weights = weights,
+                          foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, multiy, family = "mgaussian",
+                    type.measure = "mse",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = "mgaussian",
+                                        weights = weights),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "mgaussian")
+})
+
+test_that("glmnet mgaussian-mae", {
+  target_fit <- cv.glmnet(x, multiy, family = "mgaussian", weights = weights,
+                          type.measure = "mae",
+                          foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, multiy, family = "mgaussian",
+                    type.measure = "mae",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = "mgaussian",
+                                        weights = weights),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "mgaussian")
 })
