@@ -24,6 +24,8 @@ computeError <- function(predmat, y, lambda, foldid, type.measure, family,
                          weights = rep(1, dim(predmat)[1]),
                          grouped = TRUE) {
   ### parameter checks
+  checkValidTypeMeasure(type.measure, family)
+
   if (length(lambda) != dim(predmat)[length(dim(predmat))])
     stop("lambda should be a vector of length `dim(predmat)[length(dim(predmat))]`")
 

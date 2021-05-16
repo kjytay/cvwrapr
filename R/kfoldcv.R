@@ -113,9 +113,7 @@ kfoldcv <- function(x,
   N <- nrow(x)
 
   ### parameter checking section
-  if (!(type.measure %in% availableTypeMeasures(family)))
-    stop(paste("Invalid type.measure for this family;",
-               "see availableTypeMeasures() for possibilities"))
+  checkValidTypeMeasure(type.measure, family)
 
   if ("family" %in% names(train_params) &&
       is.character(train_params$family) &&

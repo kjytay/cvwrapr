@@ -2,6 +2,8 @@
 #'
 #' Get the full name of the loss function from `type.measure` and `family`.
 getTypeMeasureName <- function(type.measure, family) {
+  if ("family" %in% class(family)) family <- "GLM"
+
   if (type.measure == "deviance") {
     typename <- switch(family,
                        gaussian = "Mean-squared Error",
