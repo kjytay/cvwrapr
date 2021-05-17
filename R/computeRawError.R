@@ -30,12 +30,11 @@
 #' \item{type.measure}{Loss function used for CV.}
 computeRawError <- function(predmat, y, type.measure, family, weights, foldid,
                             grouped) {
-  if (family %in% c("cox", "GLM"))
-    stop(paste("Not implemented yet for family =", family))
+  checkValidTypeMeasure(type.measure, family)
 
-  if (!(type.measure %in% availableTypeMeasures(family)))
-    stop(paste("Invalid type.measure for this family;",
-               "see availableTypeMeasures() for possibilities"))
+  if ("family" %in% class(family)) family <- "GLM"
+
+  if (family == "cox") stop("Not implemented yet for family ='cox'")
 
   return(do.call(paste0("computeRawError.", family),
                  list(predmat = predmat, y = y, type.measure = type.measure,
@@ -190,6 +189,22 @@ computeRawError.mgaussian <- function(predmat, y, type.measure,
                  deviance = apply((bigY - predmat)^2, c(1, 3), sum),
                  mae = apply(abs(bigY - predmat), c(1, 3), sum)
   )
+  return(list(cvraw = cvraw, weights = weights, N = N,
+              type.measure = type.measure, grouped = grouped))
+}
+
+computeRawError.GLM <- function(predmat, y, type.measure,
+                                weights, foldid, grouped) {
+  family <- attr(predmat, "family")
+  nobs <- nrow(predmat)
+  N <- nobs - apply(is.na(predmat), 2, sum)
+  cvraw <- switch(type.measure,
+                  mse = (y - predmat)^2,
+                  mae = abs(y - predmat),
+                  deviance = family$dev.resids(array(y,dim(predmat)),
+                                               predmat, 1)
+  )
+
   return(list(cvraw = cvraw, weights = weights, N = N,
               type.measure = type.measure, grouped = grouped))
 }

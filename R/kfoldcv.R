@@ -25,6 +25,8 @@
 #' the package does not check if the user-specified measure is appropriate
 #' for the family.
 #' @param family Model family; used to determine the correct loss function.
+#' One of "gaussian", "binomial", "poisson", "cox", "multinomial",
+#' "mgaussian", or a class "family" object.
 #' @param lambda Option user-supplied sequence representing the values of the
 #' hyperparameter to be cross-validated.
 #' @param train_params Any parameters that should be passed to

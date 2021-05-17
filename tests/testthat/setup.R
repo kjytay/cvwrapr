@@ -2,7 +2,9 @@ library(glmnet)
 
 # passes when everything matches
 compare_glmnet_fits <- function(target_fit, new_fit, family = "gaussian") {
-  if (family == "poisson") {
+  if ("family" %in% class(family)) {
+    new_fit$fit.preval <- family$linkfun(new_fit$fit.preval)
+  } else if (family == "poisson") {
     new_fit$fit.preval <- log(new_fit$fit.preval)
   } else if (family == "binomial") {
     new_fit$fit.preval <- log((new_fit$fit.preval) / (1 - new_fit$fit.preval))

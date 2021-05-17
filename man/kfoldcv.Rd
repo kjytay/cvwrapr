@@ -41,7 +41,9 @@ output of `train_fun` as `object` and new input matrix as `newx`.}
 the package does not check if the user-specified measure is appropriate
 for the family.}
 
-\item{family}{Model family; used to determine the correct loss function.}
+\item{family}{Model family; used to determine the correct loss function.
+One of "gaussian", "binomial", "poisson", "cox", "multinomial",
+"mgaussian", or a class "family" object.}
 
 \item{lambda}{Option user-supplied sequence representing the values of the
 hyperparameter to be cross-validated.}

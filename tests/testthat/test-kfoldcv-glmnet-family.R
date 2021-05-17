@@ -275,3 +275,52 @@ test_that("glmnet mgaussian-mae", {
 
   compare_glmnet_fits(target_fit, cv_fit, family = "mgaussian")
 })
+
+test_that("glmnet binomial probit-deviance", {
+  family <- binomial(link = "probit")
+  target_fit <- cv.glmnet(x, biny, family = family, weights = weights,
+                          foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, biny, family = family,
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = family,
+                                        weights = weights),
+                    predict_params = list(type = "response"),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = family)
+})
+
+test_that("glmnet binomial probit-mse", {
+  family <- binomial(link = "probit")
+  target_fit <- cv.glmnet(x, biny, family = family, weights = weights,
+                          type.measure = "mse",
+                          foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, biny, family = family,
+                    type.measure = "mse",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = family,
+                                        weights = weights),
+                    predict_params = list(type = "response"),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = family)
+})
+
+test_that("glmnet binomial probit-mae", {
+  family <- binomial(link = "probit")
+  target_fit <- cv.glmnet(x, biny, family = family, weights = weights,
+                          type.measure = "mae",
+                          foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, biny, family = family,
+                    type.measure = "mae",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = family,
+                                        weights = weights),
+                    predict_params = list(type = "response"),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = family)
+})
