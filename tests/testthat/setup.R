@@ -1,4 +1,5 @@
 library(glmnet)
+library(survival)
 
 # passes when everything matches
 compare_glmnet_fits <- function(target_fit, new_fit, family = "gaussian") {
@@ -8,6 +9,8 @@ compare_glmnet_fits <- function(target_fit, new_fit, family = "gaussian") {
     new_fit$fit.preval <- log(new_fit$fit.preval)
   } else if (family == "binomial") {
     new_fit$fit.preval <- log((new_fit$fit.preval) / (1 - new_fit$fit.preval))
+  } else if (family == "cox") {
+    target_fit$fit.preval <- exp(target_fit$fit.preval)
   } else if (family == "multinomial") {
     nc <- dim(target_fit$fit.preval)[2]
     predmat <- exp(target_fit$fit.preval)

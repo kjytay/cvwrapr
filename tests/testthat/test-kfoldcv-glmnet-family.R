@@ -2,13 +2,18 @@
 set.seed(1)
 nobs <- 100; nvars <- 10
 x <- matrix(rnorm(nobs * nvars), nrow = nobs)
+
+# various responses
 y <- rowSums(x[, 1:2]) + rnorm(nobs)
 biny <- ifelse(y > 0, 1, 0)
 factorbiny <- factor(biny, labels = c("a", "b"))
+survy <- survival::Surv(exp(y), event = rep(c(0, 1), length.out = nobs))
 multinomy <- ifelse(y > 0.6, 3, ifelse(y < -0.6, 1, 2))
 factormultinomy <- factor(multinomy, labels = c("a", "b", "c"))
 poiy <- exp(y)
 multiy <- matrix(y, nrow = nobs, ncol = 3) + matrix(rnorm(nobs * 3), ncol = 3)
+
+# other parameters
 foldid <- sample(rep(seq(5), length = nobs))
 weights <- rep(1:2, length.out = nobs)
 
@@ -158,6 +163,35 @@ test_that("glmnet poisson-mae", {
                     foldid = foldid, keep = TRUE)
 
   compare_glmnet_fits(target_fit, cv_fit, family = "poisson")
+})
+
+test_that("glmnet cox-deviance", {
+  target_fit <- cv.glmnet(x, survy, family = "cox", weights = weights,
+                          foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, survy, family = "cox",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = "cox",
+                                        weights = weights),
+                    predict_params = list(type = "response"),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "cox")
+})
+
+test_that("glmnet cox-C", {
+  target_fit <- cv.glmnet(x, survy, family = "cox", weights = weights,
+                          type.measure = "C",
+                          foldid = foldid, keep = TRUE)
+  cv_fit <- kfoldcv(x, survy, family = "cox", type.measure = "C",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = "cox",
+                                        weights = weights),
+                    predict_params = list(type = "response"),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "cox")
 })
 
 test_that("glmnet multinomial-deviance", {

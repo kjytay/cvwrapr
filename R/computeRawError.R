@@ -34,8 +34,6 @@ computeRawError <- function(predmat, y, type.measure, family, weights, foldid,
 
   if ("family" %in% class(family)) family <- "GLM"
 
-  if (family == "cox") stop("Not implemented yet for family ='cox'")
-
   return(do.call(paste0("computeRawError.", family),
                  list(predmat = predmat, y = y, type.measure = type.measure,
                       weights = weights, foldid = foldid, grouped = grouped)))
@@ -57,7 +55,7 @@ computeRawError.binomial <- function(predmat, y, type.measure,
 
   if ((N / nfolds < 10) && type.measure == "auc") {
     warning(paste("Too few (< 10) observations per fold for type.measure='auc'",
-                  "in cv.lognet; changed to type.measure='deviance'.",
+                  "in binomial family; changed to type.measure='deviance'.",
                   "Alternatively, use smaller value for nfolds"),
             call. = FALSE)
     type.measure <- "deviance"
@@ -69,9 +67,9 @@ computeRawError.binomial <- function(predmat, y, type.measure,
     good <- matrix(0, nfolds, nlambda)
     for (i in seq_along(foldid_vals)) {
       good[i, seq(nlambda)] <- 1
-      which <- (foldid == foldid_vals[i])
+      out_idx <- (foldid == foldid_vals[i])
       for (j in seq(nlambda)) {
-        cvraw[i, j] <- getAUC(y[which, ], predmat[which, j], weights[which])
+        cvraw[i, j] <- getAUC(y[out_idx, ], predmat[out_idx, j], weights[out_idx])
       }
     }
     N <- apply(good, 2, sum)
@@ -134,6 +132,38 @@ computeRawError.poisson <- function(predmat, y, type.measure,
 
   return(list(cvraw = cvraw, weights = weights, N = N,
               type.measure = type.measure, grouped = grouped))
+}
+
+computeRawError.cox <- function(predmat, y, type.measure,
+                                     weights, foldid, grouped) {
+  foldid_vals <- sort(unique(foldid))
+  nfolds <- length(foldid_vals)
+
+  if (type.measure == "deviance") {
+    cvraw <- attr(predmat, "cvraw")
+    N <- nfolds - apply(is.na(cvraw), 2, sum)
+    weights <- as.vector(tapply(weights * y[, "status"], foldid, sum))
+    cvraw <- cvraw / weights
+  } else {
+    # type.measure == "C"
+    nlambda <- ncol(predmat)
+    nlams <- rep(nlambda, nfolds)
+    cvraw <- matrix(NA, nfolds, nlambda)
+    good <- matrix(0, nfolds, nlambda)
+    for (i in seq_along(foldid_vals)) {
+      good[i, seq(nlams[i])] <- 1
+      out_idx <- (foldid == foldid_vals[i])
+      for (j in seq(nlams[i])) {
+        cvraw[i, j] = getCindex(predmat[out_idx, j], y[out_idx, ],
+                                weights[out_idx])
+      }
+    }
+    N <- apply(good, 2, sum)
+    weights <- tapply(weights, foldid, sum)
+  }
+
+  return(list(cvraw = cvraw, weights = weights, N = N,
+              type.measure = type.measure, grouped = FALSE))  # not sure abt return value for grouped, just following glmnet
 }
 
 computeRawError.multinomial <- function(predmat, y, type.measure,
