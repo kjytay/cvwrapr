@@ -2,6 +2,12 @@
 #'
 #' Compute CV statistics from a matrix of predictions.
 #'
+#' Note that for the setting where `family = "cox"` and
+#' `type.measure = "deviance"` and `grouped = TRUE`, `predmat` needs to have
+#' a `cvraw` attribute as computed by `buildPredMat()`. This is because the
+#' usual matrix of pre-validated fits does not contain all the information
+#' needed to compute the model deviance for this setting.
+#'
 #' @param predmat Array of predictions. If `y` is univariate, this has
 #' dimensions `c(nobs, nlambda)`. If `y` is multivariate with `nc`
 #' levels/columns (e.g. for `family = "multionmial"` or
@@ -18,6 +24,8 @@
 #' for the family.
 #' @param family Model family; used to determine the correct loss function.
 #' @param weights Observation weights.
+#' @param grouped Experimental argument; see `kfoldcv()` documentation for
+#' details.
 #'
 #' @export
 computeError <- function(predmat, y, lambda, foldid, type.measure, family,
@@ -39,7 +47,7 @@ computeError <- function(predmat, y, lambda, foldid, type.measure, family,
 
   grouped <- cvstuff$grouped
   if ((dim(predmat)[1] / nfolds < 3) && grouped) {
-    warning(paste("Option grouped = FALSE enforced in cv.glmnet,",
+    warning(paste("Option grouped = FALSE enforced in computeError,",
                   "since < 3 observations per fold"),
             call. = FALSE)
     grouped <- FALSE

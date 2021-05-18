@@ -38,7 +38,17 @@ for the family.}
 \item{family}{Model family; used to determine the correct loss function.}
 
 \item{weights}{Observation weights.}
+
+\item{grouped}{Experimental argument; see `kfoldcv()` documentation for
+details.}
 }
 \description{
 Compute CV statistics from a matrix of predictions.
+}
+\details{
+Note that for the setting where `family = "cox"` and
+`type.measure = "deviance"` and `grouped = TRUE`, `predmat` needs to have
+a `cvraw` attribute as computed by `buildPredMat()`. This is because the
+usual matrix of pre-validated fits does not contain all the information
+needed to compute the model deviance for this setting.
 }

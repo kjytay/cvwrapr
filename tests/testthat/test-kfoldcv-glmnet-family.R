@@ -179,6 +179,20 @@ test_that("glmnet cox-deviance", {
   compare_glmnet_fits(target_fit, cv_fit, family = "cox")
 })
 
+test_that("glmnet cox-deviance, grouped = FALSE", {
+  target_fit <- cv.glmnet(x, survy, family = "cox", weights = weights,
+                          foldid = foldid, keep = TRUE, grouped = FALSE)
+  cv_fit <- kfoldcv(x, survy, family = "cox",
+                    train_fun = glmnet, predict_fun = predict,
+                    train_params = list(family = "cox",
+                                        weights = weights),
+                    predict_params = list(type = "response"),
+                    train_row_params = c("weights"),
+                    foldid = foldid, keep = TRUE, grouped = FALSE)
+
+  compare_glmnet_fits(target_fit, cv_fit, family = "cox")
+})
+
 test_that("glmnet cox-C", {
   target_fit <- cv.glmnet(x, survy, family = "cox", weights = weights,
                           type.measure = "C",

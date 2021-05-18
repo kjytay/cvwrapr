@@ -140,7 +140,23 @@ computeRawError.cox <- function(predmat, y, type.measure,
   nfolds <- length(foldid_vals)
 
   if (type.measure == "deviance") {
-    cvraw <- attr(predmat, "cvraw")
+    if (!("cvraw" %in% names(attributes(predmat)))) {
+      if (grouped)
+        stop(paste("predmat needs 'cvraw' attribute for family='cox',",
+                   "type.measure='deviance' and grouped=TRUE;",
+                   "can be obtained via buildPredMat()"))
+      else {
+        cvraw <- matrix(NA, nfolds, ncol(predmat))
+        for (i in seq_along(foldid_vals)) {
+          out_idx <- (foldid == foldid_vals[i])
+          cvraw[i, ] <- coxnet.deviance(pred = predmat[out_idx, ],
+                                        y = y[out_idx, ],
+                                        weights = weights[out_idx])
+        }
+      }
+    } else {
+      cvraw <- attr(predmat, "cvraw")  # hard work done in buildPredMat()
+    }
     N <- nfolds - apply(is.na(cvraw), 2, sum)
     weights <- as.vector(tapply(weights * y[, "status"], foldid, sum))
     cvraw <- cvraw / weights

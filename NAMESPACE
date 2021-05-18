@@ -2,6 +2,7 @@
 
 S3method(plot,cvobj)
 export(availableTypeMeasures)
+export(buildPredMat)
 export(computeError)
 export(coxnet.deviance)
 export(getCindex)

@@ -42,7 +42,7 @@
 #' are "weights" (for observation weights) and "offset".
 #' @param predict_row_params A vector which is a subset of
 #' `names(predict_params)`, indicating which parameters have to be subsetted
-#' in the CV loop (other than `newx`). Default is `c("newx")`.
+#' in the CV loop (other than `newx`). Default is `c()`.
 #' Other parameters which should probably be included here
 #' are "newoffset".
 #' @param nfolds Number of folds (default is 10). Smallest allowable value
@@ -163,7 +163,7 @@ kfoldcv <- function(x,
   train_obj <- do.call(train_fun, train_params)
 
   # fit for each of the folds
-  outlist <- as.list(seq(nfolds))  # to store the fits
+  cvfitlist <- as.list(seq(nfolds))  # to store the fits
   for (i in seq_along(foldid_vals)) {
     out_idx <- (foldid == foldid_vals[i])
 
@@ -175,13 +175,13 @@ kfoldcv <- function(x,
         train_params[[param]] <- train_params_copy[[param]][!out_idx]
       }
     }
-    outlist[[i]] <- do.call(train_fun, train_params)
+    cvfitlist[[i]] <- do.call(train_fun, train_params)
   }
 
   # build prediction matrix
   lambda <- train_obj$lambda
   predict_params$s <- lambda
-  predmat <- buildPredMat(outlist, y, lambda, foldid, predict_fun,
+  predmat <- buildPredMat(cvfitlist, y, lambda, foldid, predict_fun,
                           predict_params, predict_row_params, family,
                           type.measure, weights, grouped)
 

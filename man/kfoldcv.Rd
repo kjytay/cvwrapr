@@ -64,7 +64,7 @@ are "weights" (for observation weights) and "offset".}
 
 \item{predict_row_params}{A vector which is a subset of
 `names(predict_params)`, indicating which parameters have to be subsetted
-in the CV loop (other than `newx`). Default is `c("newx")`.
+in the CV loop (other than `newx`). Default is `c()`.
 Other parameters which should probably be included here
 are "newoffset".}
 

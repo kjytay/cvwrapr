@@ -1,12 +1,43 @@
-# y is passed to determine what dimensions the prediction array needs to have
-# type.measure, weights and grouped arguments only used for family = "cox"
-buildPredMat <- function(outlist, y, lambda, foldid, predict_fun,
+#' Build a prediction matrix from CV model fits
+#'
+#' Build a matrix of predictions from CV model fits.
+#'
+#' @param cvfitlist A list of length `nfolds`, with each element being
+#' the model fit for each fold.
+#' @param y Response. It is only used to determine what dimensions the
+#' prediction array needs to have.
+#' @param lambda Lambda values for which we want predictions.
+#' @param foldid Vector of values identifying which fold each observation is
+#' in.
+#' @param predict_fun The prediction function; see `kfoldcv()` documentation
+#' for details.
+#' @param predict_params Any other parameters that should be passed tp
+#' `predict_fun` to get predictions (other than `object` and `newx`); see
+#' `kfoldcv()` documentation for details.
+#' @param predict_row_params A vector which is a subset of
+#' `names(predict_params)`, indicating which parameters have to be subsetted
+#' in the CV loop (other than `newx`); see `kfoldcv()` documentation for
+#' details.
+#' @param family Model family; one of "gaussian", "binomial", "poisson",
+#' "cox", "multinomial", "mgaussian", or a class "family" object.
+#' @param type.measure Loss function to use for cross-validation.
+#' Only required for `family = "cox"`.
+#' @param weights Observation weights. Only required for `family = "cox"`.
+#' @param grouped Experimental argument; see `kfoldcv()` documentation for
+#' details. Only required for `family = "cox"`.
+#'
+#' @return A matrix of predictions.
+#'
+#' @export
+buildPredMat <- function(cvfitlist, y, lambda, foldid, predict_fun,
                          predict_params, predict_row_params, family,
-                         type.measure, weights, grouped) {
+                         type.measure = NULL, weights = NULL, grouped = NULL) {
+  if (!("s" %in% predict_params)) predict_params$s <- lambda
+
   # family = "cox" needs its own way of building up the prediction matrix
   # because of the grouped = TRUE and type.measure = "deviance" case
   if (is.character(family) && family == "cox")
-    return(buildPredMat.cox(outlist, y, lambda, foldid, predict_fun,
+    return(buildPredMat.cox(cvfitlist, y, lambda, foldid, predict_fun,
                             predict_params, predict_row_params,
                             type.measure, weights, grouped))
 
@@ -30,7 +61,7 @@ buildPredMat <- function(outlist, y, lambda, foldid, predict_fun,
   predict_params_copy <- predict_params
   for (i in seq_along(foldid_vals)) {
     out_idx <- (foldid == foldid_vals[i])
-    predict_params$object <- outlist[[i]]
+    predict_params$object <- cvfitlist[[i]]
 
     # update the training parameters before fitting
     for (param in predict_row_params) {
@@ -71,14 +102,14 @@ buildPredMat <- function(outlist, y, lambda, foldid, predict_fun,
   }
 
   if (is.character(family) && family %in% c("binomial", "multinomial"))
-    attr(predmat, "classnames") <- outlist[[1]]$classnames
+    attr(predmat, "classnames") <- cvfitlist[[1]]$classnames
   if ("family" %in% class(family))
     attr(predmat, "family") <- family
 
   return(predmat)
 }
 
-buildPredMat.cox <- function(outlist, y, lambda, foldid, predict_fun,
+buildPredMat.cox <- function(cvfitlist, y, lambda, foldid, predict_fun,
                              predict_params, predict_row_params,
                              type.measure, weights, grouped) {
   foldid_vals <- sort(unique(foldid))
@@ -100,7 +131,7 @@ buildPredMat.cox <- function(outlist, y, lambda, foldid, predict_fun,
   for (i in seq_along(foldid_vals)) {
     out_idx <- (foldid == foldid_vals[i])
     predict_params <- predict_params_copy
-    predict_params$object <- outlist[[i]]
+    predict_params$object <- cvfitlist[[i]]
 
     # make predictions for the whole dataset
     preds <- do.call(predict_fun, predict_params)
