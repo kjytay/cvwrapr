@@ -19,15 +19,15 @@ getOptLambda <- function (lambda, cvm, cvsd, type.measure) {
 
     # compute lambda.min
     cvmin <- min(cvm, na.rm = TRUE)
-    idmin <- (cvm <= cvmin)
-    lambda.min <- max(lambda[idmin], na.rm = TRUE)
-    idmin <- match(lambda.min, lambda)
+    idmin <- which(cvm <= cvmin)
+    idmin <- min(idmin, na.rm = TRUE)
+    lambda.min <- lambda[idmin]
 
     # compute lambda.1se
     semin <- (cvm + cvsd)[idmin]
-    id1se <- (cvm <= semin)
-    lambda.1se <- max(lambda[id1se], na.rm = TRUE)
-    id1se <- match(lambda.1se, lambda)
+    id1se <- which(cvm <= semin)
+    id1se <- min(id1se, na.rm = TRUE)
+    lambda.1se <- lambda[id1se]
 
     index <- matrix(c(idmin,id1se), ncol = 1,
                     dimnames = list(c("min", "1se"), "Lambda"))
