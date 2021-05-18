@@ -20,7 +20,8 @@ kfoldcv(
   foldid = NULL,
   parallel = FALSE,
   grouped = TRUE,
-  keep = FALSE
+  keep = FALSE,
+  save_cvfits = FALSE
 )
 }
 \arguments{
@@ -94,6 +95,9 @@ partial likelihood is computed only on the Kth fold.}
 fitted values for each observation and each value of lambda. This means
 these fits are computed with this observation and the rest of its fold
 omitted. The `foldid` vector is also returned. Default is `keep = FALSE`.}
+
+\item{save_cvfits}{If `TRUE`, the model fits for each CV fold are returned
+as a list. Default is `FALSE`.}
 }
 \value{
 An object of class "cvobj".
@@ -109,6 +113,8 @@ reached for that fold.}
 \item{foldid}{If `keep=TRUE`, the fold assignments used.}
 \item{name}{A text string indicating the loss function used (for plotting
 purposes).}
+\item{cvfitlist}{If `save_cvfits=TRUE`, a list containing the model
+fits for each CV fold.}
 \item{lambda.min}{Value of `lambda` that gives minimum `cvm`.}
 \item{lambda.1se}{Largest value of `lambda` such that the error is within
 1 standard error of the minimum.}

@@ -67,6 +67,8 @@
 #' fitted values for each observation and each value of lambda. This means
 #' these fits are computed with this observation and the rest of its fold
 #' omitted. The `foldid` vector is also returned. Default is `keep = FALSE`.
+#' @param save_cvfits If `TRUE`, the model fits for each CV fold are returned
+#' as a list. Default is `FALSE`.
 #'
 #' @return An object of class "cvobj".
 #' \item{lambda}{The values of lambda used in the fits.}
@@ -81,6 +83,8 @@
 #' \item{foldid}{If `keep=TRUE`, the fold assignments used.}
 #' \item{name}{A text string indicating the loss function used (for plotting
 #' purposes).}
+#' \item{cvfitlist}{If `save_cvfits=TRUE`, a list containing the model
+#' fits for each CV fold.}
 #' \item{lambda.min}{Value of `lambda` that gives minimum `cvm`.}
 #' \item{lambda.1se}{Largest value of `lambda` such that the error is within
 #' 1 standard error of the minimum.}
@@ -103,7 +107,8 @@ kfoldcv <- function(x,
                     foldid = NULL,
                     parallel = FALSE,  # not in use yet
                     grouped = TRUE,
-                    keep = FALSE) {
+                    keep = FALSE,
+                    save_cvfits = FALSE) {
   # arguments x, y, newx and lambda have a special status at the moment
   # we may want to remove this special status in the future
   train_params$x <- x
@@ -190,9 +195,9 @@ kfoldcv <- function(x,
   out <- computeError(predmat, y, lambda, foldid, type.measure, family,
                       weights, grouped)
 
-  if (keep)
-    out <- c(out, list(fit.preval = predmat, foldid = foldid))
+  if (keep) out <- c(out, list(fit.preval = predmat, foldid = foldid))
   out$name <- getTypeMeasureName(out$type.measure, family)
+  if (save_cvfits) out$cvfitlist <- cvfitlist
 
   # compute the lambda.min and lambda.1se values
   lamin <- with(out, getOptLambda(lambda, cvm, cvsd, out$type.measure))
