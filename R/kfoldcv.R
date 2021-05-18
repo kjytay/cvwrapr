@@ -50,7 +50,8 @@
 #' @param foldid An optional vector of values between `1` and `nfolds`
 #' (inclusive) identifying which fold each observation is in. If supplied,
 #' `nfolds` can be missing.
-#' @param parallel NOT IMPLEMENTED YET
+#' @param parallel If `TRUE`, use parallel `foreach` to fit each
+#' fold.  Must register parallel backend before hand. Default is `FALSE`.
 #' @param grouped This is an experimental argument, with default `TRUE`,
 #' and can be ignored by most users. For all models except `family = "cox"`,
 #' this refers to computing `nfolds` separate statistics, and then using
@@ -83,6 +84,7 @@
 #' \item{foldid}{If `keep=TRUE`, the fold assignments used.}
 #' \item{name}{A text string indicating the loss function used (for plotting
 #' purposes).}
+#' \item{overallfit}{Model fit for the entire dataset.}
 #' \item{cvfitlist}{If `save_cvfits=TRUE`, a list containing the model
 #' fits for each CV fold.}
 #' \item{lambda.min}{Value of `lambda` that gives minimum `cvm`.}
@@ -91,6 +93,7 @@
 #' \item{index}{A one-column matrix with the indices of `lambda.min` and
 #' `lambda.1se` in the sequence of coefficients, fits etc.}
 #'
+#' @importFrom foreach foreach `%dopar%`
 #' @export
 kfoldcv <- function(x,
                     y,
@@ -105,7 +108,7 @@ kfoldcv <- function(x,
                     predict_row_params = c(),
                     nfolds = 10,
                     foldid = NULL,
-                    parallel = FALSE,  # not in use yet
+                    parallel = FALSE,
                     grouped = TRUE,
                     keep = FALSE,
                     save_cvfits = FALSE) {
@@ -169,18 +172,35 @@ kfoldcv <- function(x,
 
   # fit for each of the folds
   cvfitlist <- as.list(seq(nfolds))  # to store the fits
-  for (i in seq_along(foldid_vals)) {
-    out_idx <- (foldid == foldid_vals[i])
+  if (!parallel) {
+    for (i in seq_along(foldid_vals)) {
+      out_idx <- (foldid == foldid_vals[i])
 
-    # update the training parameters before fitting
-    for (param in train_row_params) {
-      if (is.matrix(train_params_copy[[param]])) {
-        train_params[[param]] <- train_params_copy[[param]][!out_idx, , drop = FALSE]
-      } else {
-        train_params[[param]] <- train_params_copy[[param]][!out_idx]
+      # update the training parameters before fitting
+      for (param in train_row_params) {
+        if (is.matrix(train_params_copy[[param]])) {
+          train_params[[param]] <- train_params_copy[[param]][!out_idx, , drop = FALSE]
+        } else {
+          train_params[[param]] <- train_params_copy[[param]][!out_idx]
+        }
       }
+      cvfitlist[[i]] <- do.call(train_fun, train_params)
     }
-    cvfitlist[[i]] <- do.call(train_fun, train_params)
+  } else {
+    # compute CV model fits in parallel
+    cvfitlist <- foreach(i = seq_along(foldid_vals)) %dopar% {
+      out_idx <- (foldid == foldid_vals[i])
+
+      # update the training parameters before fitting
+      for (param in train_row_params) {
+        if (is.matrix(train_params_copy[[param]])) {
+          train_params[[param]] <- train_params_copy[[param]][!out_idx, , drop = FALSE]
+        } else {
+          train_params[[param]] <- train_params_copy[[param]][!out_idx]
+        }
+      }
+      do.call(train_fun, train_params)
+    }
   }
 
   # build prediction matrix
@@ -195,8 +215,10 @@ kfoldcv <- function(x,
   out <- computeError(predmat, y, lambda, foldid, type.measure, family,
                       weights, grouped)
 
+  # add items to returned output
   if (keep) out <- c(out, list(fit.preval = predmat, foldid = foldid))
   out$name <- getTypeMeasureName(out$type.measure, family)
+  out$overallfit <- train_obj
   if (save_cvfits) out$cvfitlist <- cvfitlist
 
   # compute the lambda.min and lambda.1se values

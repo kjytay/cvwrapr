@@ -1,5 +1,6 @@
 library(glmnet)
 library(survival)
+library(parallel)  # for parallel test
 
 # passes when everything matches
 compare_glmnet_fits <- function(target_fit, new_fit, family = "gaussian") {

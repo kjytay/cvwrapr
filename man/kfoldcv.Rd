@@ -76,7 +76,8 @@ is 3.}
 (inclusive) identifying which fold each observation is in. If supplied,
 `nfolds` can be missing.}
 
-\item{parallel}{NOT IMPLEMENTED YET}
+\item{parallel}{If `TRUE`, use parallel `foreach` to fit each
+fold.  Must register parallel backend before hand. Default is `FALSE`.}
 
 \item{grouped}{This is an experimental argument, with default `TRUE`,
 and can be ignored by most users. For all models except `family = "cox"`,
@@ -113,6 +114,7 @@ reached for that fold.}
 \item{foldid}{If `keep=TRUE`, the fold assignments used.}
 \item{name}{A text string indicating the loss function used (for plotting
 purposes).}
+\item{overallfit}{Model fit for the entire dataset.}
 \item{cvfitlist}{If `save_cvfits=TRUE`, a list containing the model
 fits for each CV fold.}
 \item{lambda.min}{Value of `lambda` that gives minimum `cvm`.}

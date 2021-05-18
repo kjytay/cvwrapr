@@ -287,3 +287,26 @@ plot(cv_fit, log.lambda = FALSE, xlab = "Interaction depth",
 - `foldid`: An optional vector of values between `1` and `nfolds` (inclusive) identifying which fold each observation is in. Note that `kfoldcv` actually works even if `foldid` does not take values between `1` and `nfolds`, but for ease of use it is recommended that users do so.
 - `keep`: If set to `TRUE`, `kfoldcv` returns the matrix of pre-validated fits as well as the `foldid` vector used in CV. Default is `FALSE`.
 - `save_cvfits`: If set to `TRUE`, `kfoldcv` returns the intermediate model fits for each CV fold. This is useful if the user wants to inspect the intermediate fits (e.g model coefficients) or compute some intermediate statistic (e.g. how many times a feature appears across the folds). However, bear in mind that this could greatly inflate the size of the object `kfoldcv` returns. Default is `FALSE`.
+- `parallel`: If set to `TRUE`, model-fitting for each CV fold can be done in parallel. A parallel backend must be registered first. Below is a code example comparing a call to `kfoldcv` with and without parallel computing, using the vanilla `glmnet` example.
+
+```{r}
+# without parallel computing
+set.seed(3)
+foldid <- sample(rep(1:5, length.out = nrow(x)))
+cv_fit1 <- kfoldcv(x, y, foldid = foldid, train_fun = glmnet, 
+                   predict_fun = predict)
+
+# with parallel computing
+library(parallel)
+cl <- parallel::makeCluster(4)
+doParallel::registerDoParallel(cl)
+cv_fit2 <- kfoldcv(x, y, foldid = foldid, train_fun = glmnet, 
+                   predict_fun = predict, parallel = TRUE)
+parallel::stopCluster(cl)
+
+# check that the two fits are the same
+expect_equal(cv_fit1$lambda, cv_fit2$lambda)
+expect_equal(cv_fit1$cvm, cv_fit2$cvm)
+expect_equal(cv_fit1$cvsd, cv_fit2$cvsd)
+```
+

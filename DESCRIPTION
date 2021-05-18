@@ -16,5 +16,6 @@ Suggests:
     pls,
     gbm
 Imports: 
-    survival
+    survival,
+    foreach
 VignetteBuilder: knitr
