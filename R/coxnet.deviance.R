@@ -1,6 +1,9 @@
 #' Compute deviance for Cox model
 #'
-#' Compute the deviance (-2 log partial likelihood) for Cox model.
+#' Compute the deviance (-2 log partial likelihood) for Cox model. This is a
+#' pared down version of `glmnet`'s `coxnet.deviance` with one big difference:
+#' here, `pred` is on the scale of `y` (`mu`) while in `glmnet`, `pred` is the
+#' linear predictor (`eta`).
 #'
 #' Computes the deviance for a single set of predictions, or for a matrix
 #' of predictions. Uses the Breslow approach to ties.
@@ -31,10 +34,6 @@
 #'
 #' # example with (start, stop] data
 #' y2 <- survival::Surv(time, time + runif(10), d)
-#' coxnet.deviance(pred = exp(eta), y = y2)
-#'
-#' # example with strata
-#' y2 <- stratifySurv(y, rep(1:2, length.out = 10))
 #' coxnet.deviance(pred = exp(eta), y = y2)
 #'
 #' @export

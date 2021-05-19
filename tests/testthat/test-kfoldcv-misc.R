@@ -43,7 +43,7 @@ test_that("family mismatch", {
 })
 
 test_that("parallel", {
-  cl <- parallel::makeCluster(4)
+  cl <- parallel::makeCluster(2)
   doParallel::registerDoParallel(cl)
 
   cv_fit1 <- kfoldcv(x, y, train_fun = glmnet, predict_fun = predict,

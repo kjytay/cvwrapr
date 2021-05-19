@@ -16,6 +16,8 @@
 #' \item{cvsd}{Estimate of standard error of `cvm`.}
 #' \item{cvup}{Upper curve = `cvm + cvsd`.}
 #' \item{cvlo}{Lower curve = `cvm - cvsd`.}
+#'
+#' @importFrom stats weighted.mean
 computeStats <- function(cvstuff, foldid, lambda, grouped) {
   if (grouped) {
     # compute the statistics for each fold
@@ -36,6 +38,7 @@ computeStats <- function(cvstuff, foldid, lambda, grouped) {
               cvlo = cvm - cvsd))
 }
 
+#' @importFrom stats weighted.mean
 cvcompute <- function (cvstuff, foldid, nlams) {
   foldid_vals <- sort(unique(foldid))
   nfolds <- length(foldid_vals)

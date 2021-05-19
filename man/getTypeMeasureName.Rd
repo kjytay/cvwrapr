@@ -6,6 +6,11 @@
 \usage{
 getTypeMeasureName(type.measure, family)
 }
+\arguments{
+\item{type.measure}{Loss function to use for cross-validation.}
+
+\item{family}{Model family.}
+}
 \description{
 Get the full name of the loss function from `type.measure` and `family`.
 }

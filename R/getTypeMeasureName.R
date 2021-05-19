@@ -1,6 +1,9 @@
 #' Get full name of loss function
 #'
 #' Get the full name of the loss function from `type.measure` and `family`.
+#'
+#' @param type.measure Loss function to use for cross-validation.
+#' @param family Model family.
 getTypeMeasureName <- function(type.measure, family) {
   if ("family" %in% class(family)) family <- "GLM"
 

@@ -298,7 +298,8 @@ cv_fit1 <- kfoldcv(x, y, foldid = foldid, train_fun = glmnet,
 
 # with parallel computing
 library(parallel)
-cl <- parallel::makeCluster(4)
+library(doParallel)
+cl <- parallel::makeCluster(2)
 doParallel::registerDoParallel(cl)
 cv_fit2 <- kfoldcv(x, y, foldid = foldid, train_fun = glmnet, 
                    predict_fun = predict, parallel = TRUE)

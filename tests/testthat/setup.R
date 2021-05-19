@@ -1,6 +1,8 @@
 library(glmnet)
+library(Matrix)  # for sparse matrix
 library(survival)
 library(parallel)  # for parallel test
+library(doParallel)
 
 # passes when everything matches
 compare_glmnet_fits <- function(target_fit, new_fit, family = "gaussian") {

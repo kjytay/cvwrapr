@@ -6,6 +6,11 @@
 \usage{
 checkValidTypeMeasure(type.measure, family)
 }
+\arguments{
+\item{type.measure}{Loss function to use for cross-validation.}
+
+\item{family}{Model family.}
+}
 \description{
-Also throws error if family is invalid
+Also throws error if family is invalid.
 }

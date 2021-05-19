@@ -12,6 +12,7 @@
 #'
 #' @return A plot is produced, and nothing is returned.
 #'
+#' @importFrom graphics abline points
 #' @export
 plot.cvobj <- function(x, sign.lambda = 1, log.lambda = TRUE, ...) {
   cvobj <- x
@@ -50,6 +51,7 @@ plot.cvobj <- function(x, sign.lambda = 1, log.lambda = TRUE, ...) {
   invisible()
 }
 
+#' @importFrom graphics segments
 error.bars <- function(x, upper, lower, width = 0.02, ...) {
   xlim <- range(x)
   barw <- diff(xlim) * width

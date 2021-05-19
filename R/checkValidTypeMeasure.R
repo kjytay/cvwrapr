@@ -1,6 +1,9 @@
 #' Check if loss function is valid for a given family
 #'
-#' Also throws error if family is invalid
+#' Also throws error if family is invalid.
+#'
+#' @param type.measure Loss function to use for cross-validation.
+#' @param family Model family.
 checkValidTypeMeasure <- function(type.measure, family) {
   if ("family" %in% class(family)) family <- "GLM"
 
