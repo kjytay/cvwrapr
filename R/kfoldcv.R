@@ -78,20 +78,20 @@
 #' \item{cvsd}{Estimate of standard error of `cvm`.}
 #' \item{cvup}{Upper curve = `cvm + cvsd`.}
 #' \item{cvlo}{Lower curve = `cvm - cvsd`.}
-#' \item{fit.preval}{If `keep=TRUE`, this is the array of prevalidated fits.
-#' Some entries can be `NA`, if that and subsequent values of `lambda` are not
-#' reached for that fold.}
-#' \item{foldid}{If `keep=TRUE`, the fold assignments used.}
-#' \item{name}{A text string indicating the loss function used (for plotting
-#' purposes).}
-#' \item{overallfit}{Model fit for the entire dataset.}
-#' \item{cvfitlist}{If `save_cvfits=TRUE`, a list containing the model
-#' fits for each CV fold.}
 #' \item{lambda.min}{Value of `lambda` that gives minimum `cvm`.}
 #' \item{lambda.1se}{Largest value of `lambda` such that the error is within
 #' 1 standard error of the minimum.}
 #' \item{index}{A one-column matrix with the indices of `lambda.min` and
 #' `lambda.1se` in the sequence of coefficients, fits etc.}
+#' \item{name}{A text string indicating the loss function used (for plotting
+#' purposes).}
+#' \item{fit.preval}{If `keep=TRUE`, this is the array of prevalidated fits.
+#' Some entries can be `NA`, if that and subsequent values of `lambda` are not
+#' reached for that fold.}
+#' \item{foldid}{If `keep=TRUE`, the fold assignments used.}
+#' \item{overallfit}{Model fit for the entire dataset.}
+#' \item{cvfitlist}{If `save_cvfits=TRUE`, a list containing the model
+#' fits for each CV fold.}
 #'
 #' @importFrom foreach foreach `%dopar%`
 #' @export
@@ -206,8 +206,8 @@ kfoldcv <- function(x,
   # build prediction matrix
   lambda <- train_obj$lambda
   predict_params$s <- lambda
-  predmat <- buildPredMat(cvfitlist, y, lambda, foldid, predict_fun,
-                          predict_params, predict_row_params, family,
+  predmat <- buildPredMat(cvfitlist, y, lambda, family, foldid, predict_fun,
+                          predict_params, predict_row_params,
                           type.measure, weights, grouped)
 
   # compute error metric
@@ -217,14 +217,8 @@ kfoldcv <- function(x,
 
   # add items to returned output
   if (keep) out <- c(out, list(fit.preval = predmat, foldid = foldid))
-  out$name <- getTypeMeasureName(out$type.measure, family)
   out$overallfit <- train_obj
   if (save_cvfits) out$cvfitlist <- cvfitlist
-
-  # compute the lambda.min and lambda.1se values
-  lamin <- with(out, getOptLambda(lambda, cvm, cvsd, out$type.measure))
-  out <- c(out, as.list(lamin))
-  out$type.measure <- NULL
 
   class(out) <- c("cvobj", class(out))
   return(out)

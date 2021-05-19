@@ -7,6 +7,8 @@
 #' @param y Response. It is only used to determine what dimensions the
 #' prediction array needs to have.
 #' @param lambda Lambda values for which we want predictions.
+#' @param family Model family; one of "gaussian", "binomial", "poisson",
+#' "cox", "multinomial", "mgaussian", or a class "family" object.
 #' @param foldid Vector of values identifying which fold each observation is
 #' in.
 #' @param predict_fun The prediction function; see `kfoldcv()` documentation
@@ -18,8 +20,6 @@
 #' `names(predict_params)`, indicating which parameters have to be subsetted
 #' in the CV loop (other than `newx`); see `kfoldcv()` documentation for
 #' details.
-#' @param family Model family; one of "gaussian", "binomial", "poisson",
-#' "cox", "multinomial", "mgaussian", or a class "family" object.
 #' @param type.measure Loss function to use for cross-validation.
 #' Only required for `family = "cox"`.
 #' @param weights Observation weights. Only required for `family = "cox"`.
@@ -27,10 +27,8 @@
 #' details. Only required for `family = "cox"`.
 #'
 #' @return A matrix of predictions.
-#'
-#' @export
-buildPredMat <- function(cvfitlist, y, lambda, foldid, predict_fun,
-                         predict_params, predict_row_params, family,
+buildPredMat <- function(cvfitlist, y, lambda, family, foldid, predict_fun,
+                         predict_params, predict_row_params = c(),
                          type.measure = NULL, weights = NULL, grouped = NULL) {
   if (!("s" %in% predict_params)) predict_params$s <- lambda
 

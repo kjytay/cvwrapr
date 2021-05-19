@@ -8,11 +8,11 @@ buildPredMat(
   cvfitlist,
   y,
   lambda,
+  family,
   foldid,
   predict_fun,
   predict_params,
-  predict_row_params,
-  family,
+  predict_row_params = c(),
   type.measure = NULL,
   weights = NULL,
   grouped = NULL
@@ -26,6 +26,9 @@ the model fit for each fold.}
 prediction array needs to have.}
 
 \item{lambda}{Lambda values for which we want predictions.}
+
+\item{family}{Model family; one of "gaussian", "binomial", "poisson",
+"cox", "multinomial", "mgaussian", or a class "family" object.}
 
 \item{foldid}{Vector of values identifying which fold each observation is
 in.}
@@ -41,9 +44,6 @@ for details.}
 `names(predict_params)`, indicating which parameters have to be subsetted
 in the CV loop (other than `newx`); see `kfoldcv()` documentation for
 details.}
-
-\item{family}{Model family; one of "gaussian", "binomial", "poisson",
-"cox", "multinomial", "mgaussian", or a class "family" object.}
 
 \item{type.measure}{Loss function to use for cross-validation.
 Only required for `family = "cox"`.}

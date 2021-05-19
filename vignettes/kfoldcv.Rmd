@@ -33,14 +33,14 @@ y <- rowSums(x[, 1:2]) + rnorm(nobs)
 ```
 
 If we used `glmnet`'s `cv.glmnet` function to perform CV, the call would look like this:
-```{r}
+```{r message=FALSE}
 library(glmnet)
 set.seed(1)
 glmnet_fit <- cv.glmnet(x, y)
 ```
 
 An equivalent call using `kfoldcv` would look like this.
-```{r}
+```{r message=FALSE}
 library(cvwrapr)
 set.seed(1)
 cv_fit <- kfoldcv(x, y, train_fun = glmnet, predict_fun = predict)
@@ -186,7 +186,7 @@ y <- rowSums(x[, 1:2]) + rnorm(nobs)
 ```
 
 The `pls` package can perform PC regression with `pcr()`, but its interface is quite different from what `kfoldcv()` needs. Recall that `train_fun` must take the data matrix, response and hyperparameter values as `x`, `y` and `lambda` respectively. `predict_fun` must take the output of `train_fun`, the new data matrix and the hyperparameter values as `object`, `newx` and `s` respectively. The code below shows how we can write `train_fun` and `predict_fun` for the PC regression problem:
-```{r}
+```{r message=FALSE}
 library(pls)
 
 # lambda represents no. of PCs
@@ -220,7 +220,7 @@ Notice that in determining the `lambda.1se` value, the `plot` method correctly d
 
 Let's look at another non-`glmnet` example: gradient boosting with the `gbm` package. In this first example, we want to cross-validate the number of trees to be included in our boosting ensemble. As with PC regression, we need to write our own `train_fun` and `predict_fun` to interface correctly with `kfoldcv`.
 
-```{r}
+```{r message=FALSE}
 library(gbm)
 
 # lambda represents # of trees
@@ -289,7 +289,7 @@ plot(cv_fit, log.lambda = FALSE, xlab = "Interaction depth",
 - `save_cvfits`: If set to `TRUE`, `kfoldcv` returns the intermediate model fits for each CV fold. This is useful if the user wants to inspect the intermediate fits (e.g model coefficients) or compute some intermediate statistic (e.g. how many times a feature appears across the folds). However, bear in mind that this could greatly inflate the size of the object `kfoldcv` returns. Default is `FALSE`.
 - `parallel`: If set to `TRUE`, model-fitting for each CV fold can be done in parallel. A parallel backend must be registered first. Below is a code example comparing a call to `kfoldcv` with and without parallel computing, using the vanilla `glmnet` example.
 
-```{r}
+```{r message=FALSE}
 # without parallel computing
 set.seed(3)
 foldid <- sample(rep(1:5, length.out = nrow(x)))

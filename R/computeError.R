@@ -27,6 +27,21 @@
 #' @param grouped Experimental argument; see `kfoldcv()` documentation for
 #' details.
 #'
+#' @return An object of class "cvobj".
+#' \item{lambda}{The values of lambda used in the fits.}
+#' \item{cvm}{The mean cross-validated error: a vector of length
+#' `length(lambda)`.}
+#' \item{cvsd}{Estimate of standard error of `cvm`.}
+#' \item{cvup}{Upper curve = `cvm + cvsd`.}
+#' \item{cvlo}{Lower curve = `cvm - cvsd`.}
+#' \item{lambda.min}{Value of `lambda` that gives minimum `cvm`.}
+#' \item{lambda.1se}{Largest value of `lambda` such that the error is within
+#' 1 standard error of the minimum.}
+#' \item{index}{A one-column matrix with the indices of `lambda.min` and
+#' `lambda.1se` in the sequence of coefficients, fits etc.}
+#' \item{name}{A text string indicating the loss function used (for plotting
+#' purposes).}
+#'
 #' @export
 computeError <- function(predmat, y, lambda, foldid, type.measure, family,
                          weights = rep(1, dim(predmat)[1]),
@@ -56,5 +71,13 @@ computeError <- function(predmat, y, lambda, foldid, type.measure, family,
   out <- computeStats(cvstuff, foldid, lambda, grouped)
   out$type.measure <- cvstuff$type.measure
 
+  # compute the lambda.min and lambda.1se values
+  lamin <- with(out, getOptLambda(lambda, cvm, cvsd, type.measure))
+  out <- c(out, as.list(lamin))
+
+  out$name <- getTypeMeasureName(out$type.measure, family)
+  out$type.measure <- NULL
+
+  class(out) <- c("cvobj", class(out))
   return(out)
 }
