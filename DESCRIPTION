@@ -1,7 +1,7 @@
 Package: cvwrapr
 Type: Package
 Title: Tools for Cross Validation
-Version: 0.1
+Version: 0.1.1
 Authors@R: person("Kenneth", "Tay", role = c("aut", "cre"), email = "kjytay@gmail.com")
 Description: Tools for performing cross-validation (CV).
 License: GPL (>= 3)

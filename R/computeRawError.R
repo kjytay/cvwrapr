@@ -178,8 +178,10 @@ computeRawError.cox <- function(predmat, y, type.measure,
     weights <- tapply(weights, foldid, sum)
   }
 
+  # grouped is always FALSE because cvraw is always an nfolds by nlambda matrix
+  # (not nobs by lambda); aggregation within folds has already been done here
   return(list(cvraw = cvraw, weights = weights, N = N,
-              type.measure = type.measure, grouped = FALSE))  # not sure abt return value for grouped, just following glmnet
+              type.measure = type.measure, grouped = FALSE))
 }
 
 computeRawError.multinomial <- function(predmat, y, type.measure,
