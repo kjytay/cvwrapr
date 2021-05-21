@@ -14,7 +14,8 @@
 #' `family = "mgaussian"`), this has dimensions `c(nobs, nc, nlambda)`.
 #' Note that these should be on the same scale as `y` (unlike in the
 #' glmnet package where it is the linear predictor).
-#' @param y Response variable.
+#' @param y Response variable. Either a vector or a matrix, depending on the
+#' type of model.
 #' @param lambda Lambda values associated with the errors in `predmat`.
 #' @param foldid Vector of values identifying which fold each observation is
 #' in.
@@ -24,8 +25,18 @@
 #' for the family.
 #' @param family Model family; used to determine the correct loss function.
 #' @param weights Observation weights.
-#' @param grouped Experimental argument; see `kfoldcv()` documentation for
-#' details.
+#' @param grouped This is an experimental argument, with default `TRUE`,
+#' and can be ignored by most users. For all models except `family = "cox"`,
+#' this refers to computing `nfolds` separate statistics, and then using
+#' their mean and estimated standard error to describe the CV curve. If
+#' `FALSE`, an error matrix is built up at the observation level
+#' from the predictions from the `nfolds` fits, and then summarized (does
+#' not apply to `type.measure="auc"`). For the "cox" family,
+#' `grouped=TRUE` obtains the CV partial likelihood for the Kth fold by
+#' \emph{subtraction}; by subtracting the log partial likelihood evaluated on
+#' the full dataset from that evaluated on the on the (K-1)/K dataset. This
+#' makes more efficient use of risk sets. With `grouped=FALSE` the log
+#' partial likelihood is computed only on the Kth fold.
 #'
 #' @return An object of class "cvobj".
 #' \item{lambda}{The values of lambda used in the fits.}
