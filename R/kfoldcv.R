@@ -220,6 +220,6 @@ kfoldcv <- function(x,
   out$overallfit <- train_obj
   if (save_cvfits) out$cvfitlist <- cvfitlist
 
-  class(out) <- c("cvobj", class(out))
+  if (!("cvobj" %in% class(out))) class(out) <- c("cvobj", class(out))
   return(out)
 }
