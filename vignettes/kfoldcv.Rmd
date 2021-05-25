@@ -126,14 +126,22 @@ If we have an earlier version of `glmnet` which only allows the `exclude` argume
 ```{r}
 train_fun <- function(x, y) {
   exclude <- which(colMeans(x == 0) > 0.8)
-  model <- glmnet(x[, -exclude, drop = FALSE], y)
+  if (length(exclude) == 0) {
+    model <- glmnet(x, y)
+  } else {
+    model <- glmnet(x[, -exclude, drop = FALSE], y)
+  }
   return(list(lambda = model$lambda,
               exclude = exclude,
               model = model))
 }
 
 predict_fun <- function(object, newx, s) {
-  predict(object$model, newx = newx[, -object$exclude, drop = FALSE], s = s)
+  if (length(object$exclude) == 0) {
+    predict(object$model, newx = newx, s = s)
+  } else {
+    predict(object$model, newx = newx[, -object$exclude, drop = FALSE], s = s)
+  }
 }
 
 cv_fit <- kfoldcv(x, y, train_fun = train_fun, predict_fun = predict_fun,
