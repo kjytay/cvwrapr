@@ -93,6 +93,13 @@
 #' \item{cvfitlist}{If `save_cvfits=TRUE`, a list containing the model
 #' fits for each CV fold.}
 #'
+#' @examples
+#' set.seed(1)
+#' x <- matrix(rnorm(500), nrow = 50)
+#' y <- rnorm(50)
+#' cv_fit <- kfoldcv(x, y, train_fun = glmnet::glmnet,
+#'                   predict_fun = predict)
+#'
 #' @importFrom foreach foreach `%dopar%`
 #' @export
 kfoldcv <- function(x,

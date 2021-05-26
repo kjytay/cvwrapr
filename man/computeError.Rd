@@ -79,3 +79,14 @@ a `cvraw` attribute as computed by `buildPredMat()`. This is because the
 usual matrix of pre-validated fits does not contain all the information
 needed to compute the model deviance for this setting.
 }
+\examples{
+set.seed(1)
+x <- matrix(rnorm(500), nrow = 50)
+y <- rnorm(50)
+cv_fit <- kfoldcv(x, y, train_fun = glmnet::glmnet,
+                  predict_fun = predict, keep = TRUE)
+mae_err <- computeError(cv_fit$fit.preval, y, cv_fit$lambda,
+                        cv_fit$foldid, type.measure = "mae",
+                        family = "gaussian")
+
+}

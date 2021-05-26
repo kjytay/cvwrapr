@@ -137,3 +137,11 @@ values actually used are stored as `lambda`. The prediction function
 is assumed to take in the new data matrix as `newx`, and a `lambda`
 sequence as `s`.
 }
+\examples{
+set.seed(1)
+x <- matrix(rnorm(500), nrow = 50)
+y <- rnorm(50)
+cv_fit <- kfoldcv(x, y, train_fun = glmnet::glmnet,
+                  predict_fun = predict)
+
+}

@@ -53,6 +53,16 @@
 #' \item{name}{A text string indicating the loss function used (for plotting
 #' purposes).}
 #'
+#' @examples
+#' set.seed(1)
+#' x <- matrix(rnorm(500), nrow = 50)
+#' y <- rnorm(50)
+#' cv_fit <- kfoldcv(x, y, train_fun = glmnet::glmnet,
+#'                   predict_fun = predict, keep = TRUE)
+#' mae_err <- computeError(cv_fit$fit.preval, y, cv_fit$lambda,
+#'                         cv_fit$foldid, type.measure = "mae",
+#'                         family = "gaussian")
+#'
 #' @export
 computeError <- function(predmat, y, lambda, foldid, type.measure, family,
                          weights = rep(1, dim(predmat)[1]),
