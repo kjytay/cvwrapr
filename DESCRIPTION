@@ -6,7 +6,6 @@ Authors@R: person("Kenneth", "Tay", role = c("aut", "cre"), email = "kjytay@gmai
 Description: Tools for performing cross-validation (CV).
 License: GPL (>= 3)
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 7.1.1
 Suggests: 
     doParallel,

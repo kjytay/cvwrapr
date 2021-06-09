@@ -102,18 +102,17 @@ Let's look at a `glmnet` example with `exclude`. First, let's create some data s
 set.seed(101)
 x[sample(seq(length(x)), 4 * nobs * nvars / 5)] <- 0
 y <- rowSums(x[, 1:2]) + rnorm(nobs)
+foldid <- sample(rep(seq(5), length = nobs))
 ```
 
-Sometimes, we might want to exclude variables which are too sparse. In the code below, we exclude variables that are more than 80% sparse. Note that we are passing a function to the `exclude` argument, functionality that is only available in `glmnet` version 4.1-2 and later.
-```{r}
+Sometimes, we might want to exclude variables which are too sparse. In the code below, we exclude variables that are more than 80% sparse. From `glmnet` version 4.1-2 and later (not on CRAN yet at time of writing), we can pass a function to the `exclude` argument.
+```{r eval=FALSE}
 filter <- function(x, ...) which(colMeans(x == 0) > 0.8)
-
-foldid <- sample(rep(seq(5), length = nobs))
 glmnet_fit <- cv.glmnet(x, y, foldid = foldid, exclude = filter)
 ```
 
 Of course, we could pass the filter along to `kfoldcv` via `train_params`:
-```{r}
+```{r eval=FALSE}
 cv_fit <- kfoldcv(x, y, train_fun = glmnet, predict_fun = predict,
                   train_params = list(exclude = filter), foldid = foldid)
 
@@ -146,7 +145,9 @@ predict_fun <- function(object, newx, s) {
 
 cv_fit <- kfoldcv(x, y, train_fun = train_fun, predict_fun = predict_fun,
                   foldid = foldid)
+```
 
+```{r eval=FALSE}
 expect_equal(glmnet_fit$lambda, cv_fit$lambda)
 expect_equal(glmnet_fit$cvm, cv_fit$cvm)
 expect_equal(glmnet_fit$cvsd, cv_fit$cvsd)
