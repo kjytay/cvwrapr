@@ -1,0 +1,10 @@
+reference:
+- title: "All functions"
+- contents:
+  - availableTypeMeasures
+  - computeError
+  - coxnet.deviance
+  - getCindex
+  - kfoldcv
+  - plot.cvobj
+  - print.cvobj
