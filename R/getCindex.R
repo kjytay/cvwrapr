@@ -8,6 +8,14 @@
 #' \code{stratifySurv} object.
 #' @param weights Observation weights (default is all equal to 1).
 #'
+#' @return The C index for the predictions (a single numeric value).
+#'
+#' @examples
+#' set.seed(1)
+#' pred <- rep(1:2, length.out = 10)
+#' y <- survival::Surv(exp(rnorm(10)), rbinom(10, 1, 0.5))
+#' getCindex(pred, y)
+#'
 #' @importFrom survival concordance Surv
 #' @export
 getCindex <- function(pred, y, weights = rep(1,nrow(y))) {

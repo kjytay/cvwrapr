@@ -24,9 +24,13 @@ death at that time.}
 Helps to find ties in death times of data.
 }
 \examples{
+\dontrun{
 # Example with no ties
-glmnet:::fid(c(1, 4, 5, 6), 1:5)
+fid(c(1, 4, 5, 6), 1:5)
 
 # Example with ties
-glmnet:::fid(c(1, 1, 1, 2, 3, 3, 4, 4, 4), 1:9)
+fid(c(1, 1, 1, 2, 3, 3, 4, 4, 4), 1:9)
 }
+
+}
+\keyword{internal}

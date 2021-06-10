@@ -14,6 +14,11 @@ availableTypeMeasures(
 measures available for that family are produced. Default is "all", in which
 case the names of measures for all families are produced.}
 }
+\value{
+If `family = "all"`, a list of names of measures that can be used
+in CV for each family; otherwise, a vector of names of measures that can
+be used for the family passed as the parameter.
+}
 \description{
 Produces a list of names of measures that can be used in CV for different
 families. Note, however, that the package does not check if the measure

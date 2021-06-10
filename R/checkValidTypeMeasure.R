@@ -4,6 +4,10 @@
 #'
 #' @param type.measure Loss function to use for cross-validation.
 #' @param family Model family.
+#'
+#' @return No return value; called for side effects. (If the function returns
+#' instead of throwing an error, it means the loss function is valid for
+#' that family.)
 checkValidTypeMeasure <- function(type.measure, family) {
   if ("family" %in% class(family)) family <- "GLM"
 

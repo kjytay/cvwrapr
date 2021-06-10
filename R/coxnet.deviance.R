@@ -319,12 +319,15 @@ coxnet.deviance3 <- function(pred = NULL, y, weights = NULL,
 #' time with ties, index_ties gives the indices of the observations with a
 #' death at that time.}
 #'
-#' @examples
+#' @examples \dontrun{
 #' # Example with no ties
-#' glmnet:::fid(c(1, 4, 5, 6), 1:5)
+#' fid(c(1, 4, 5, 6), 1:5)
 #'
 #' # Example with ties
-#' glmnet:::fid(c(1, 1, 1, 2, 3, 3, 4, 4, 4), 1:9)
+#' fid(c(1, 1, 1, 2, 3, 3, 4, 4, 4), 1:9)
+#' }
+#'
+#' @keywords internal
 fid <- function(x, index) {
   idup <- duplicated(x)
   if (!any(idup))

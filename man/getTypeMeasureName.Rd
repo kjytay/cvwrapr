@@ -11,6 +11,11 @@ getTypeMeasureName(type.measure, family)
 
 \item{family}{Model family.}
 }
+\value{
+A named vector of length 1. The vector's value is the full name
+of the loss function, while the name of that element is the short name
+of the loss function.
+}
 \description{
 Get the full name of the loss function from `type.measure` and `family`.
 }

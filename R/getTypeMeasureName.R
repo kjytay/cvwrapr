@@ -4,6 +4,10 @@
 #'
 #' @param type.measure Loss function to use for cross-validation.
 #' @param family Model family.
+#'
+#' @return A named vector of length 1. The vector's value is the full name
+#' of the loss function, while the name of that element is the short name
+#' of the loss function.
 getTypeMeasureName <- function(type.measure, family) {
   if ("family" %in% class(family)) family <- "GLM"
 

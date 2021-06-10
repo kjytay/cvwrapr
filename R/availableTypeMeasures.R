@@ -8,6 +8,10 @@
 #' measures available for that family are produced. Default is "all", in which
 #' case the names of measures for all families are produced.
 #'
+#' @return If `family = "all"`, a list of names of measures that can be used
+#' in CV for each family; otherwise, a vector of names of measures that can
+#' be used for the family passed as the parameter.
+#'
 #' @export
 availableTypeMeasures <- function(family = c("all", "gaussian", "binomial",
                                              "poisson", "multinomial", "cox",

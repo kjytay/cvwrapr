@@ -11,6 +11,11 @@ checkValidTypeMeasure(type.measure, family)
 
 \item{family}{Model family.}
 }
+\value{
+No return value; called for side effects. (If the function returns
+instead of throwing an error, it means the loss function is valid for
+that family.)
+}
 \description{
 Also throws error if family is invalid.
 }

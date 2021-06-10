@@ -3,7 +3,11 @@ Type: Package
 Title: Tools for Cross Validation
 Version: 1.0
 Authors@R: person("Kenneth", "Tay", role = c("aut", "cre"), email = "kjytay@gmail.com")
-Description: Tools for performing cross-validation (CV).
+Description: Tools for performing cross-validation (CV). The main function is a 
+    general purpose wrapper that performs k-fold CV for any tuning parameter in 
+    any supervised learning method. The package also has a function that 
+    computes the loss incurred by a set of predictions for a variety of loss 
+    functions and model families.
 License: GPL (>= 3)
 Encoding: UTF-8
 RoxygenNote: 7.1.1

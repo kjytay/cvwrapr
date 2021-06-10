@@ -14,7 +14,17 @@ getCindex(pred, y, weights = rep(1, nrow(y)))
 
 \item{weights}{Observation weights (default is all equal to 1).}
 }
+\value{
+The C index for the predictions (a single numeric value).
+}
 \description{
 Computes Harrel's C (concordance) index for predictions, taking
 censoring into account.
+}
+\examples{
+set.seed(1)
+pred <- rep(1:2, length.out = 10)
+y <- survival::Surv(exp(rnorm(10)), rbinom(10, 1, 0.5))
+getCindex(pred, y)
+
 }
