@@ -16,8 +16,8 @@ values along with other useful information. The `computeError` function
 allows the user to compute the CV error for a range of loss functions
 from a matrix of out-of-fold predictions.
 
-See the [package website](https://kjytay.github.io/cvwrapr/) for more
-examples and documentation.
+See the [package website](https://kjytay.github.io/cvwrapr/index.html)
+for more examples and documentation.
 
 ## Installation
 
