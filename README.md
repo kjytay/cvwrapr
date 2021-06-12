@@ -4,6 +4,9 @@
 # cvwrapr
 
 <!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/cvwrapr)](https://CRAN.R-project.org/package=cvwrapr)
 <!-- badges: end -->
 
 The goal of `cvwrapr` is to make cross-validation (CV) easy. The main
@@ -16,10 +19,13 @@ more examples.
 
 ## Installation
 
-You can install the development version from
-[GitHub](https://github.com/) with:
+You can install `cvwrapr` in the following ways:
 
 ``` r
+# from CRAN
+install.packages("cvwrapr")
+
+# development version from GitHub
 # install.packages("devtools")
 devtools::install_github("kjytay/cvwrapr")
 ```
@@ -53,4 +59,4 @@ names(cv_fit)
 plot(cv_fit)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
