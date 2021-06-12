@@ -14,8 +14,10 @@ function in the package is `kfoldcv`. It performs K-fold CV for a
 hyperparameter, returning the CV error for a path of hyperparameter
 values along with other useful information. The `computeError` function
 allows the user to compute the CV error for a range of loss functions
-from a matrix of out-of-fold predictions. See the package vignettes for
-more examples.
+from a matrix of out-of-fold predictions.
+
+See the [package website](https://kjytay.github.io/cvwrapr/) for more
+examples and documentation.
 
 ## Installation
 
